@@ -1,0 +1,28 @@
+/* Custom styles for merged tutorial site */
+:root {
+  --vp-c-brand-1: #6366f1;
+  --vp-c-brand-2: #4f46e5;
+  --vp-c-brand-3: #4338ca;
+}
+
+/* Override VitePress dark mode colors slightly */
+.dark {
+  --vp-c-bg: #0f172a;
+  --vp-c-bg-soft: #1e293b;
+  --vp-c-bg-soft-up: #334155;
+}
+
+/* Smooth transitions */
+VPImage {
+  transition: opacity 0.2s ease;
+}
+
+/* Custom navbar spacing */
+.Navbar {
+  border-bottom: 1px solid var(--vp-c-border);
+}
+
+/* Home hero adjustments */
+.home .hero name {
+  font-size: 3rem;
+}
