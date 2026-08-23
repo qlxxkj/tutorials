@@ -38,13 +38,6 @@ jobs:
           mv docs/.vitepress/dist/* .
           mv docs/.vitepress/dist/.[!.]* . 2>/dev/null || true
           rmdir docs/.vitepress/dist 2>/dev/null || true
-      - name: Commit and push
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add -A
-          git commit -m "chore: deploy build output" || echo "No changes to commit"
-          git push
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
