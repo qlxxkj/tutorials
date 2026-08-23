@@ -1,28 +1,267 @@
-/* Custom styles for merged tutorial site */
+/* ── 课程简介页统一美化 ── */
+
+/* 课程卡片区：课程简介区块 */
+.course-intro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.course-intro .feature-card {
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.course-intro .feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.course-intro .feature-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.course-intro .feature-card p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--vp-c-text-2);
+  line-height: 1.6;
+}
+
+/* ── 主题色变量（默认靛蓝） ── */
 :root {
-  --vp-c-brand-1: #6366f1;
-  --vp-c-brand-2: #4f46e5;
-  --vp-c-brand-3: #4338ca;
+  --course-primary: #6366f1;
+  --course-primary-soft: rgba(99,102,241,0.08);
+  --course-primary-muted: rgba(99,102,241,0.15);
+  --course-accent: #818cf8;
 }
 
-/* Override VitePress dark mode colors slightly */
-.dark {
-  --vp-c-bg: #0f172a;
-  --vp-c-bg-soft: #1e293b;
-  --vp-c-bg-soft-up: #334155;
+[data-course="claude-code"] {
+  --course-primary: #6366f1;
+  --course-primary-soft: rgba(99,102,241,0.08);
+  --course-primary-muted: rgba(99,102,241,0.15);
+  --course-accent: #818cf8;
 }
 
-/* Smooth transitions */
-VPImage {
-  transition: opacity 0.2s ease;
+[data-course="codex"] {
+  --course-primary: #0ea5e9;
+  --course-primary-soft: rgba(14,165,233,0.08);
+  --course-primary-muted: rgba(14,165,233,0.15);
+  --course-accent: #38bdf8;
 }
 
-/* Custom navbar spacing */
-.Navbar {
+[data-course="amazon"] {
+  --course-primary: #f97316;
+  --course-primary-soft: rgba(249,115,22,0.08);
+  --course-primary-muted: rgba(249,115,22,0.15);
+  --course-accent: #fb923c;
+}
+
+/* ── 通用组件样式 ── */
+
+/* 课程头部横幅 */
+.course-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--vp-c-bg-soft);
+  border-radius: 12px;
+  margin: 20px 0 28px 0;
+  border-left: 4px solid var(--course-primary, #6366f1);
+}
+
+.course-header .course-icon {
+  font-size: 36px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.course-header .course-meta h2 {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.course-header .course-meta p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--vp-c-text-2);
+}
+
+/* CTA 按钮 */
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+  border: 2px solid var(--course-primary, #6366f1);
+  background: var(--course-primary, #6366f1);
+  color: #fff;
+  margin-top: 8px;
+}
+
+.cta-button:hover {
+  background: var(--course-primary-soft, rgba(99,102,241,0.08));
+  color: var(--course-primary, #6366f1);
+}
+
+/* 模块表格 */
+.module-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 16px 0;
+  font-size: 14px;
+}
+
+.module-table thead th {
+  background: var(--vp-c-bg-soft);
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--course-primary, #6366f1);
   border-bottom: 1px solid var(--vp-c-border);
 }
 
-/* Home hero adjustments */
-.home .hero name {
-  font-size: 3rem;
+.module-table tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--vp-c-border);
+  vertical-align: middle;
+}
+
+.module-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.module-table tbody tr:hover {
+  background: var(--course-primary-soft, rgba(99,102,241,0.04));
+}
+
+.module-table .duration {
+  font-size: 12px;
+  color: var(--vp-c-text-2);
+  white-space: nowrap;
+}
+
+/* 能力清单 */
+.check-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.check-list .check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--vp-c-text-1);
+  padding: 10px 14px;
+  background: var(--vp-c-bg-soft);
+  border-radius: 8px;
+  border: 1px solid var(--vp-c-border);
+}
+
+.check-item::before {
+  content: "✓";
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--course-primary-soft, rgba(99,102,241,0.08));
+  color: var(--course-primary, #6366f1);
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+/* 底部行动召唤区 */
+.course-cta {
+  margin-top: 40px;
+  padding: 28px 32px;
+  background: var(--vp-c-bg-soft);
+  border-radius: 12px;
+  border: 1px solid var(--vp-c-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.course-cta p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--vp-c-text-2);
+}
+
+.course-cta strong {
+  color: var(--vp-c-text-1);
+  font-size: 16px;
+}
+
+/* feature-card h3 主题色 */
+.feature-card h3 {
+  color: var(--course-primary, #6366f1);
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--course-primary-muted, rgba(99,102,241,0.10));
+}
+
+/* ── 返回首页按钮（亚马逊专用） ── */
+.home-btn {
+  display: inline-block;
+  padding: 8px 16px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1) !important;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 6px;
+  text-decoration: none !important;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.home-btn:hover {
+  background: var(--course-primary, #f97316);
+  border-color: var(--course-primary, #f97316);
+  color: white !important;
+}
+
+/* ── 响应式 ── */
+@media (max-width: 640px) {
+  .course-intro {
+    grid-template-columns: 1fr;
+  }
+  .check-list {
+    grid-template-columns: 1fr;
+  }
+  .course-cta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

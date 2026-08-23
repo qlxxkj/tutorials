@@ -1,36 +1,16 @@
 ---
-layout: home
-
-hero:
-  name: Codex 从零到一
-  text: 让 AI 帮你搞定编程与办公
-  tagline: 面向零编程基础的职场人士和内容创作者，用自然语言让 AI 成为你的私人助手
-  actions:
-    - theme: brand
-      text: → 开始第 1 课
-      link: /zh/modules/module-1/lesson-1
-    - theme: alt
-      text: 课程简介
-      link: /zh/appendix/prep-checklist
-
-features:
-  - title: 整理文件
-    details: 让 Codex 帮你整理文件夹、批量重命名、归类文件
-  - title: 生成网页
-    details: 用自然语言描述需求，让 Codex 生成网页或小工具
-  - title: 联网检索
-    details: 让 Codex 联网搜索资料并整理成报告
-  - title: 自动化任务
-    details: 让 Codex 执行重复性任务，节省时间
-  - title: 生成 PPT
-    details: 使用 Codex 内置技能快速完成复杂任务
+layout: page
 ---
 
 # Codex 从零到一
-## 让 AI 帮你搞定编程与办公
 
-> 面向零编程基础的职场人士和内容创作者
-> 用自然语言让 AI 成为你的私人助手
+<div class="course-header">
+  <span class="course-icon">💻</span>
+  <div class="course-meta">
+    <h2>让 AI 帮你搞定编程与办公</h2>
+    <p>面向零编程基础的职场人士和内容创作者 · 6 模块 · 16 节课 · 4 个实战项目</p>
+  </div>
+</div>
 
 ## 课程介绍
 
@@ -51,59 +31,87 @@ features:
 
 ## 课程结构
 
-这门课共有 **6 个模块**，约 **16 课 + 4 个实战项目**：
+这门课共有 **6 个模块**，约 **16 课 + 4 个实战项目**，总计约 **5-7 小时**，可分模块学习。
 
-```
-模块一：认识 Codex       →  了解它是什么、能做什么
-模块二：上手准备         →  安装、登录、第一次对话
-模块三：核心功能         →  文件操作、自然语言、联网检索、自动化
-模块四：实用技巧         →  写出更好的指令、安全使用、调用技能
-模块五：项目实战         →  4 个完整项目，从入门到进阶
-模块六：总结与进阶       →  回顾、FAQ、下一步学什么
-```
+<table class="module-table">
+  <thead>
+    <tr><th>模块</th><th>内容</th><th>时长</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>模块一</td><td>认识 Codex</td><td class="duration">45 分钟</td></tr>
+    <tr><td>模块二</td><td>上手准备</td><td class="duration">60 分钟</td></tr>
+    <tr><td>模块三</td><td>核心功能</td><td class="duration">90 分钟</td></tr>
+    <tr><td>模块四</td><td>实用技巧</td><td class="duration">45 分钟</td></tr>
+    <tr><td>模块五</td><td>项目实战</td><td class="duration">120 分钟</td></tr>
+    <tr><td>模块六</td><td>总结与进阶</td><td class="duration">30 分钟</td></tr>
+  </tbody>
+</table>
 
-## 学习路径
+## 学完你能做到什么？
 
-### 完整学习（推荐）
-
-按模块顺序学习，总时长约 **5-7 小时**：
-
-| 模块 | 预计时长 | 说明 |
-|------|---------|------|
-| 模块一 | 45 分钟 | 建立认知，暂时不需要操作 |
-| 模块二 | 60 分钟 | 动手安装、登录、完成第一次任务 |
-| 模块三 | 90 分钟 | 核心功能，每课都要练习 |
-| 模块四 | 45 分钟 | 技能提升，边学边用 |
-| 模块五 | 120 分钟 | 项目实战，建议分两天完成 |
-| 模块六 | 30 分钟 | 回顾规划下一步 |
-
-### 速成路线
-
-如果时间紧张，只学这些就够了：
-
-1. **模块一**（认识 Codex）→ 15 分钟
-2. **模块二**（安装 + 第一次对话）→ 30 分钟
-3. **模块五 · 项目一**（整理你的电脑）→ 20 分钟
-
-这样你就能用 Codex 做最实用的事情了。
+<ul class="check-list">
+  <li class="check-item">让 Codex 帮你整理文件夹、批量重命名、归类文件</li>
+  <li class="check-item">用自然语言描述需求，让 Codex 生成网页或小工具</li>
+  <li class="check-item">让 Codex 联网搜索资料并整理成报告</li>
+  <li class="check-item">让 Codex 执行重复性任务，节省时间</li>
+  <li class="check-item">使用 Codex 内置技能快速完成复杂任务（如生成 PPT）</li>
+  <li class="check-item">独立完成 4 个实战项目</li>
+</ul>
 
 ## 课前准备
 
 开始前，请确保准备好以下内容：
 
-1. **ChatGPT 账号** — 免费版即可，Plus/Pro 额度更多
-2. **一台电脑** — macOS 或 Windows 都可以
-3. **稳定的网络** — Codex 需要联网
-4. **一个待整理的文件夹** — 用于练习（比如"下载"文件夹）
-
-> 📋 详细准备清单请参考 [课前准备清单](\/codex\/zh\/appendix/prep-checklist.html)
+<div class="course-intro">
+  <div class="feature-card">
+    <h3>🔑 ChatGPT 账号</h3>
+    <p>免费版即可，Plus/Pro 额度更多，使用体验更佳</p>
+  </div>
+  <div class="feature-card">
+    <h3>💻 一台电脑</h3>
+    <p>macOS 或 Windows 都可以，配置无特殊要求</p>
+  </div>
+  <div class="feature-card">
+    <h3>🌐 稳定的网络</h3>
+    <p>Codex 需要联网运行，确保网络环境畅通</p>
+  </div>
+  <div class="feature-card">
+    <h3>📁 一个待整理的文件夹</h3>
+    <p>用于练习（比如"下载"文件夹），边学边练</p>
+  </div>
+</div>
 
 ## 遇到问题怎么办？
 
-- 安装问题 → 查看 [常见问题 FAQ](\/codex\/zh\/appendix/faq.html)
-- 看不懂术语 → 查看 [术语速查表](\/codex\/zh\/appendix/glossary.html)
-- 学完自我评估 → 填写 [课后反馈表](\/codex\/zh\/appendix/feedback.html)
+<div class="course-intro">
+  <div class="feature-card">
+    <h3>🔍 安装问题</h3>
+    <p>查看 [常见问题 FAQ](/codex/zh/appendix/faq) 获取帮助</p>
+  </div>
+  <div class="feature-card">
+    <h3>📖 看不懂术语</h3>
+    <p>查看 [术语速查表](/codex/zh/appendix/glossary) 快速查阅</p>
+  </div>
+  <div class="feature-card">
+    <h3>💬 学完自我评估</h3>
+    <p>填写 [课后反馈表](/codex/zh/appendix/feedback) 记录学习成果</p>
+  </div>
+  <div class="feature-card">
+    <h3>📋 详细准备清单</h3>
+    <p>查看 [课前准备清单](/codex/zh/appendix/prep-checklist) 确保万无一失</p>
+  </div>
+</div>
+
+## 开始学习
+
+<div class="course-cta">
+  <div>
+    <strong>准备好开始了吗？</strong>
+    <p>从第 1 课开始，让 Codex 成为你的工作伙伴</p>
+  </div>
+  <a href="/codex/zh/modules/module-1/lesson-1" class="cta-button">第 1 课：AI 编程助手是什么？ →</a>
+</div>
 
 ---
 
-*准备好了吗？开始第 1 课 👉 [第 1 课：AI 编程助手是什么？](\/codex\/zh\/modules/module-1/lesson-1.html)*
+*准备好了吗？开始第 1 课 👉 [第 1 课：AI 编程助手是什么？](/codex/zh/modules/module-1/lesson-1)*
