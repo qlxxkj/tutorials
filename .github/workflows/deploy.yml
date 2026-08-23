@@ -32,16 +32,10 @@ jobs:
         run: npm ci
       - name: Build VitePress
         run: npm run build
-      - name: Move build output to root
-        run: |
-          rm -rf .vitepress
-          mv docs/.vitepress/dist/* .
-          mv docs/.vitepress/dist/.[!.]* . 2>/dev/null || true
-          rmdir docs/.vitepress/dist 2>/dev/null || true
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: docs/.vitepress/dist
 
   deploy:
     needs: build
