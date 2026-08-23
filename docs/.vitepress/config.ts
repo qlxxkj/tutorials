@@ -12,6 +12,21 @@ export default defineConfig({
     ['link', { rel: 'icon', href: '/favicon.ico' }],
     ['link', { rel: 'stylesheet', href: '/vp-icons.css' }],
     ['meta', { name: 'viewport', content: 'width=device-width, initial-scale=1' }],
+
+    ['script', {}, '
+      (function() {
+        var lang = navigator.language || navigator.userLanguage;
+        var path = window.location.pathname;
+        // Auto-redirect based on browser language if no lang segment present
+        if (!path.includes('/zh/') && !path.includes('/en/') && path !== '/') {
+          var defaultLang = lang.startsWith('en') ? 'en' : 'zh';
+          // Only redirect for course pages
+          if (path.match(/^\/(claude-code|codex)/)) {
+            window.location.href = '/' + defaultLang + path;
+          }
+        }
+      })();
+    ' ],
     ['meta', { property: 'og:locale', content: 'zh_CN' }],
     ['meta', { property: 'og:title', content: 'qlxxkj 教程中心' }],
     ['meta', { property: 'og:description', content: 'Claude Code、Codex、亚马逊运营教程合集' }],
@@ -138,7 +153,7 @@ export default defineConfig({
             { text: '第8章 运营数据分析与优化', link: '/amazon/chapters/chapter-08' },
             { text: '第9章 客户服务与评价管理', link: '/amazon/chapters/chapter-09' },
             { text: '第10章 品牌打造与进阶策略', link: '/amazon/chapters/chapter-10' },
-            { text: '每日运营工作清单', link: '/amazon/daily/operation-daily-report' },
+            { text: '每日运营工作清单', link: '/amazon/daily/operation_daily_report' },
             { text: '附录', collapsed: true, items: [
               { text: '常见问题 FAQ', link: '/amazon/appendix/faq' },
               { text: '术语表', link: '/amazon/appendix/glossary' },
@@ -146,10 +161,10 @@ export default defineConfig({
               { text: '反馈表单', link: '/amazon/appendix/feedback' },
             ]},
             { text: '模板', collapsed: true, items: [
-              { text: '周度广告报告模板', link: '/amazon/templates/ad-weekly-report-template' },
-              { text: '竞品分析模板', link: '/amazon/templates/competitor-analysis-template' },
-              { text: '利润计算模板', link: '/amazon/templates/profit-calculation-template' },
-              { text: '供应商评估模板', link: '/amazon/templates/supplier-evaluation-template' },
+              { text: '周度广告报告模板', link: '/amazon/templates/ad_weekly_report_template' },
+              { text: '竞品分析模板', link: '/amazon/templates/competitor_analysis_template' },
+              { text: '利润计算模板', link: '/amazon/templates/profit_calculation_template' },
+              { text: '供应商评估模板', link: '/amazon/templates/supplier_evaluation_template' },
             ]},
           ],
         },
