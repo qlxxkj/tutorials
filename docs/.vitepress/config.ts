@@ -4,7 +4,7 @@ export default defineConfig({
   title: 'qlxxkj Tutorials',
   description: 'AI 编程与跨境电商教程合集',
   lang: 'zh-CN',
-  base: '/tutorials/',
+  base: '/',
 
   ignoreDeadLinks: true,
   head: [
