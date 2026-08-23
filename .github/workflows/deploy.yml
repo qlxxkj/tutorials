@@ -32,9 +32,6 @@ jobs:
         run: npm ci
       - name: Build VitePress
         run: npm run build
-      - name: Fix asset paths for subdirectory deployment
-        run: |
-          find docs/.vitepress/dist -type f \( -name "*.html" -o -name "*.js" -o -name "*.json" -o -name "*.css" \) -exec sed -i 's|="/|="/tutorials/|g' {} +
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
