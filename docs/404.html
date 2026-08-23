@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found</title>
+  <script>
+    // Try adding .html extension
+    var path = window.location.pathname;
+    if (!path.endsWith('.html') && !path.endsWith('/')) {
+      window.location.replace(path + '.html');
+    } else if (path.endsWith('/')) {
+      window.location.replace(path + 'index.html');
+    }
+  </script>
+</head>
+<body>
+  <p>页面不存在，正在跳转... <a href="/">返回首页</a></p>
+</body>
+</html>
