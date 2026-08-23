@@ -1,6 +1,9 @@
 ---
 search: false
-layout: page
 ---
 
-<meta http-equiv="refresh" content="0;url=/claude-code/zh/">
+<script setup>
+import { useRouter } from 'vitepress'
+const router = useRouter()
+router.go('/claude-code/zh/')
+</script>

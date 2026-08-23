@@ -7,7 +7,7 @@ export default defineConfig({
   base: '/',
 
   ignoreDeadLinks: true,
-  cleanUrls: true,
+  
   head: [
     ['link', { rel: 'icon', href: '/favicon.ico' }],
     ['link', { rel: 'stylesheet', href: '/vp-icons.css' }],

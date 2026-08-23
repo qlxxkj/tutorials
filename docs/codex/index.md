@@ -1,6 +1,9 @@
 ---
 search: false
-layout: page
 ---
 
-<meta http-equiv="refresh" content="0;url=/codex/zh/">
+<script setup>
+import { useRouter } from 'vitepress'
+const router = useRouter()
+router.go('/codex/zh/')
+</script>
