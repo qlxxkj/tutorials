@@ -7,6 +7,10 @@ layout: page
 > 从零开始掌握 OpenAI Codex  
 > 让 AI 帮你搞定编程与办公自动化
 
+<div class="back-to-home">
+<a href="/" class="home-btn">← 返回首页</a>
+</div>
+
 ---
 
 ## 课程简介
@@ -35,3 +39,25 @@ Codex 是 OpenAI 推出的 AI 编程助手，能够理解你的需求并生成�
 ## 开始学习
 
 👉 [第 1 课：AI 编程助手是什么？](/codex/zh/modules/module-1/lesson-1.html)
+
+<style>
+.back-to-home {
+  margin: 20px 0;
+}
+.home-btn {
+  display: inline-block;
+  padding: 8px 16px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1) !important;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 6px;
+  text-decoration: none !important;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.home-btn:hover {
+  background: var(--vp-c-brand-1);
+  border-color: var(--vp-c-brand-1);
+  color: white !important;
+}
+</style>
