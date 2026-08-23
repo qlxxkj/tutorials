@@ -7,26 +7,13 @@ export default defineConfig({
   base: '/',
 
   ignoreDeadLinks: true,
+  cleanUrls: true,
   
   head: [
     ['link', { rel: 'icon', href: '/favicon.ico' }],
     ['link', { rel: 'stylesheet', href: '/vp-icons.css' }],
     ['meta', { name: 'viewport', content: 'width=device-width, initial-scale=1' }],
 
-    ['script', {}, '
-      (function() {
-        var lang = navigator.language || navigator.userLanguage;
-        var path = window.location.pathname;
-        // Auto-redirect based on browser language if no lang segment present
-        if (!path.includes('/zh/') && !path.includes('/en/') && path !== '/') {
-          var defaultLang = lang.startsWith('en') ? 'en' : 'zh';
-          // Only redirect for course pages
-          if (path.match(/^\/(claude-code|codex)/)) {
-            window.location.href = '/' + defaultLang + path;
-          }
-        }
-      })();
-    ' ],
     ['meta', { property: 'og:locale', content: 'zh_CN' }],
     ['meta', { property: 'og:title', content: 'qlxxkj 教程中心' }],
     ['meta', { property: 'og:description', content: 'Claude Code、Codex、亚马逊运营教程合集' }],
