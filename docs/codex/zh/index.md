@@ -1,16 +1,9 @@
----
-layout: page
----
-
 # Codex 从零到一
 
-<div class="course-header">
-  <span class="course-icon">💻</span>
-  <div class="course-meta">
-    <h2>让 AI 帮你搞定编程与办公</h2>
-    <p>面向零编程基础的职场人士和内容创作者 · 6 模块 · 16 节课 · 4 个实战项目</p>
-  </div>
-</div>
+> 面向零编程基础的职场人士和内容创作者  
+> 用自然语言，让 AI 成为你的私人助手
+
+---
 
 ## 课程介绍
 
@@ -29,88 +22,58 @@ layout: page
 
 在 OpenAI 内部，律师用 Codex 整理合同条款，招聘人员用 Codex 筛选简历，运营人员用 Codex 制作数据报表。你也可以。
 
+---
+
 ## 课程结构
 
 这门课共有 **6 个模块**，约 **16 课 + 4 个实战项目**，总计约 **5-7 小时**，可分模块学习。
 
-<table class="module-table">
-  <thead>
-    <tr><th>模块</th><th>内容</th><th>时长</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>模块一</td><td>认识 Codex</td><td class="duration">45 分钟</td></tr>
-    <tr><td>模块二</td><td>上手准备</td><td class="duration">60 分钟</td></tr>
-    <tr><td>模块三</td><td>核心功能</td><td class="duration">90 分钟</td></tr>
-    <tr><td>模块四</td><td>实用技巧</td><td class="duration">45 分钟</td></tr>
-    <tr><td>模块五</td><td>项目实战</td><td class="duration">120 分钟</td></tr>
-    <tr><td>模块六</td><td>总结与进阶</td><td class="duration">30 分钟</td></tr>
-  </tbody>
-</table>
+| 模块 | 内容 | 时长 |
+|------|------|------|
+| 模块一 | 认识 Codex | 45 分钟 |
+| 模块二 | 上手准备 | 60 分钟 |
+| 模块三 | 核心功能 | 90 分钟 |
+| 模块四 | 实用技巧 | 45 分钟 |
+| 模块五 | 项目实战 | 120 分钟 |
+| 模块六 | 总结与进阶 | 30 分钟 |
+
+---
 
 ## 学完你能做到什么？
 
-<ul class="check-list">
-  <li class="check-item">让 Codex 帮你整理文件夹、批量重命名、归类文件</li>
-  <li class="check-item">用自然语言描述需求，让 Codex 生成网页或小工具</li>
-  <li class="check-item">让 Codex 联网搜索资料并整理成报告</li>
-  <li class="check-item">让 Codex 执行重复性任务，节省时间</li>
-  <li class="check-item">使用 Codex 内置技能快速完成复杂任务（如生成 PPT）</li>
-  <li class="check-item">独立完成 4 个实战项目</li>
-</ul>
+- ✅ 让 Codex 帮你整理文件夹、批量重命名、归类文件
+- ✅ 用自然语言描述需求，让 Codex 生成网页或小工具
+- ✅ 让 Codex 联网搜索资料并整理成报告
+- ✅ 让 Codex 执行重复性任务，节省时间
+- ✅ 使用 Codex 内置技能快速完成复杂任务（如生成 PPT）
+- ✅ 独立完成 4 个实战项目
+
+---
 
 ## 课前准备
 
 开始前，请确保准备好以下内容：
 
-<div class="course-intro">
-  <div class="feature-card">
-    <h3>🔑 ChatGPT 账号</h3>
-    <p>免费版即可，Plus/Pro 额度更多，使用体验更佳</p>
-  </div>
-  <div class="feature-card">
-    <h3>💻 一台电脑</h3>
-    <p>macOS 或 Windows 都可以，配置无特殊要求</p>
-  </div>
-  <div class="feature-card">
-    <h3>🌐 稳定的网络</h3>
-    <p>Codex 需要联网运行，确保网络环境畅通</p>
-  </div>
-  <div class="feature-card">
-    <h3>📁 一个待整理的文件夹</h3>
-    <p>用于练习（比如"下载"文件夹），边学边练</p>
-  </div>
-</div>
+1. **ChatGPT 账号** — 免费版即可，Plus/Pro 额度更多
+2. **一台电脑** — macOS 或 Windows 都可以
+3. **稳定的网络** — Codex 需要联网
+4. **一个待整理的文件夹** — 用于练习（比如"下载"文件夹）
+
+> 📋 详细准备清单请参考 [课前准备清单](/codex/zh/appendix/prep-checklist)
+
+---
 
 ## 遇到问题怎么办？
 
-<div class="course-intro">
-  <div class="feature-card">
-    <h3>🔍 安装问题</h3>
-    <p>查看 [常见问题 FAQ](/codex/zh/appendix/faq) 获取帮助</p>
-  </div>
-  <div class="feature-card">
-    <h3>📖 看不懂术语</h3>
-    <p>查看 [术语速查表](/codex/zh/appendix/glossary) 快速查阅</p>
-  </div>
-  <div class="feature-card">
-    <h3>💬 学完自我评估</h3>
-    <p>填写 [课后反馈表](/codex/zh/appendix/feedback) 记录学习成果</p>
-  </div>
-  <div class="feature-card">
-    <h3>📋 详细准备清单</h3>
-    <p>查看 [课前准备清单](/codex/zh/appendix/prep-checklist) 确保万无一失</p>
-  </div>
-</div>
+- 安装问题 → 查看 [常见问题 FAQ](/codex/zh/appendix/faq)
+- 看不懂术语 → 查看 [术语速查表](/codex/zh/appendix/glossary)
+- 学完自我评估 → 填写 [课后反馈表](/codex/zh/appendix/feedback)
+
+---
 
 ## 开始学习
 
-<div class="course-cta">
-  <div>
-    <strong>准备好开始了吗？</strong>
-    <p>从第 1 课开始，让 Codex 成为你的工作伙伴</p>
-  </div>
-  <a href="/codex/zh/modules/module-1/lesson-1" class="cta-button">第 1 课：AI 编程助手是什么？ →</a>
-</div>
+👉 [第 1 课：AI 编程助手是什么？](/codex/zh/modules/module-1/lesson-1)
 
 ---
 
