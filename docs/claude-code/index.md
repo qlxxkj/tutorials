@@ -1,6 +1,3 @@
----
-layout: page
----
 
 # Claude Code 入门教程
 

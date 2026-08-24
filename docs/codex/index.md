@@ -1,6 +1,3 @@
----
-layout: page
----
 
 # Codex 从零到一
 
