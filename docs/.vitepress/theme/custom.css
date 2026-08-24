@@ -63,6 +63,13 @@
   --course-accent: #fb923c;
 }
 
+[data-course="super-opc"] {
+  --course-primary: #10b981;
+  --course-primary-soft: rgba(16,185,129,0.08);
+  --course-primary-muted: rgba(16,185,129,0.15);
+  --course-accent: #34d399;
+}
+
 /* ── 通用组件样式 ── */
 
 /* 课程头部横幅 */

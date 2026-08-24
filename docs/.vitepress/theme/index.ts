@@ -8,6 +8,7 @@ const COURSE_PATHS: Record<string, string> = {
   '/claude-code/': 'claude-code',
   '/codex/': 'codex',
   '/amazon/': 'amazon',
+  '/super-opc/': 'super-opc',
 }
 
 function setCourseAttr() {

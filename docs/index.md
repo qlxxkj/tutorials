@@ -15,6 +15,9 @@ hero:
     - theme: alt
       text: 亚马逊运营 SOP
       link: /amazon/
+    - theme: alt
+      text: 打造 AI 超级个体
+      link: /super-opc/
   image:
     src: /logo.svg
     alt: qlxxkj Tutorials
@@ -34,6 +37,11 @@ features:
     details: 独立操盘标准作业程序。10 章全流程指南，附每日工作清单和实用模板。
     link: /amazon/
     linkText: 查看手册
+  - icon: 🚀
+    title: 打造 AI 超级个体
+    details: Vibe Coding 实战教程。零基础从想法到上线，四大 AI 工具全掌握，一人成军。
+    link: /super-opc/
+    linkText: 开始学习
 ---
 
 
