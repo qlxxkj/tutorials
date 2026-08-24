@@ -7,10 +7,6 @@ layout: page
 > 面向零编程基础的职场人士和内容创作者  
 > 用自然语言，让 AI 成为你的私人助手
 
-<div class="back-to-home">
-<a href="/" class="home-btn">← 返回首页</a>
-</div>
-
 ---
 
 ## 课程简介
@@ -49,7 +45,7 @@ layout: page
 
 ## 开始学习
 
-👉 [第 1 课：AI 编程助手是什么？](/claude-code/zh/modules/module-1/lesson-1.html)
+👉 [第 1 课：AI 编程助手是什么？](/claude-code/zh/modules/module-1/lesson-1.md)
 
 ---
 
@@ -61,25 +57,3 @@ layout: page
 - ✅ 让 Claude Code 执行重复性任务，节省时间
 - ✅ 使用技能快速完成复杂任务（如生成 PPT、写简历）
 - ✅ 独立完成 4 个实战项目
-
-<style>
-.back-to-home {
-  margin: 20px 0;
-}
-.home-btn {
-  display: inline-block;
-  padding: 8px 16px;
-  background: var(--vp-c-bg-soft);
-  color: var(--vp-c-text-1) !important;
-  border: 1px solid var(--vp-c-border);
-  border-radius: 6px;
-  text-decoration: none !important;
-  font-size: 14px;
-  transition: all 0.2s;
-}
-.home-btn:hover {
-  background: var(--vp-c-brand-1);
-  border-color: var(--vp-c-brand-1);
-  color: white !important;
-}
-</style>
