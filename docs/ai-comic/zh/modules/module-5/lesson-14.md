@@ -1,218 +1,325 @@
-# 第 14 课：口型同步（Lip Sync）
+# 第 14 课：视频生成（多图参考）
 
-> 📌 **学习目标**：了解口型同步技术，掌握 HeyGen API 和本地 SadTalker 两种方案
-> ⏱️ **预计时长**：25 分钟
-> 🎯 **本节节奏**：技术原理 → API 方案 → 本地方案 → 选型决策
-
----
-
-## 一、什么是口型同步？
-
-口型同步（Lip Sync） = 让静态图片中的人物"开口说话"，嘴型和音频对得上。
-
-```
-角色参考图 + 配音音频  →  角色开口的短视频
-```
+> 📌 **学习目标**：掌握用多图参考的视频生成模型，将静态分镜转化为动态视频片段
+> ⏱️ **预计时长**：30 分钟
+> 🎯 **本节节奏**：技术原理 → 方案对比 → 实战代码 → 片段拼接策略
 
 ---
 
-## 二、方案对比
+## 一、为什么需要视频生成？
 
-### 方案 A：HeyGen API（推荐新手）
+传统 AI 漫剧的做法是**静态图片 + 配音 = 幻灯片式播放**。这种方式简单，但视觉效果有限——画面是静止的，只有声音在动。
+
+**视频生成**让画面"活"起来：人物会眨眼、头发会飘动、光影会变化。观众沉浸感大幅提升。
+
+---
+
+## 二、视频生成方案对比
+
+### 方案 A：火山引擎 Seedance 2.0 ⭐ 推荐
+
+```
+优点：
+✅ 国产，国内访问稳定，延迟低
+✅ 多图参考能力极强（可同时传入角色图+场景图）
+✅ API 调用简单，无需本地部署
+✅ 支持 5-15 秒视频片段生成
+✅ 对中文 Prompt 理解好
+
+缺点：
+❌ 按量计费，批量成本高
+❌ 个人开发者可能有配额限制
+
+工作流程：
+┌──────────────┐     ┌──────────────┐     ┌─────────────────┐
+│  角色参考图   │     │  分镜画面     │     │  镜头运动描述    │
+│  (正面全身)   │────→│  (当前分镜)   │────→│  "缓慢推进，人物眨眼" │
+└──────────────┘     └──────────────┘     └────────┬────────┘
+                                                    │
+                                             ┌──────▼──────┐
+                                             │ Seedance 2.0 │
+                                             │ 生成 5-15秒  │
+                                             │ 视频片段      │
+                                             └──────┬──────┘
+                                                    │
+                                             ┌──────▼──────┐
+                                             │  FFmpeg 拼接  │
+                                             │   → 成片     │
+                                             └─────────────┘
+```
+
+### 方案 B：MiniMax H3（API）
+
+```
+优点：
+✅ 国产，对中文理解好
+✅ 生成速度快
+✅ 角色扮演能力强
+
+缺点：
+❌ 画面质量参差不齐
+❌ 可控性不如 Seedance
+```
+
+### 方案 C：ComfyUI + MiniMax H3（本地）⭐⭐
+
+```
+优点：
+✅ 完全免费，无 API 费用
+✅ 结合 ControlNet 可精确控制镜头运动
+✅ 多图参考输入保证角色一致性
+✅ 每次生成 5-15 秒片段
+
+缺点：
+❌ 需要高性能 GPU（推荐 RTX 4090 24GB+）
+❌ 单次生成耗时 2-5 分钟
+❌ 需要定期更新模型
+
+成本对比：
+- Seedance API: ~¥1-2/秒 → 一部 2 分钟约 ¥120-240
+- 本地 MiniMax-H3: 电费约 ¥2-5/次 → 一部 2 分钟约 ¥20-50
+```
+
+---
+
+## 三、Seedance 2.0 API 实战
 
 ```python
-# 简单调用
+# scripts/video_generate.py
+import os
+import time
 import requests
+from dotenv import load_dotenv
 
-def lipsync_with_heygen(image_path: str, audio_path: str, api_key: str) -> str:
-    """使用 HeyGen API 进行口型同步"""
+load_dotenv()
 
-    # 1. 上传图像
-    with open(image_path, "rb") as f:
-        img_resp = requests.post(
-            "https://api.heygen.com/v1/upload",
-            headers={"authorization": api_key},
-            files={"file": f}
+class SeedanceGenerator:
+    """火山引擎 Seedance 2.0 视频生成器"""
+
+    def __init__(self, api_key: str, secret_key: str):
+        self.api_key = api_key
+        self.secret_key = secret_key
+        self.base_url = "https://volcengine.example.com/api/v2"
+
+    def generate(
+        self,
+        character_ref: str,    # 角色参考图路径或 URL
+        image_ref: str,         # 分镜画面路径或 URL
+        prompt: str,            # 运动描述 Prompt
+        duration: int = 5,      # 时长（秒）
+        output_path: str = "assets/video/clip_001.mp4"
+    ) -> str:
+        """
+        生成视频片段
+
+        参数:
+            character_ref: 角色参考图（保证角色一致）
+            image_ref: 分镜参考图（保证画面一致）
+            prompt: 运动描述（如"人物缓缓转头，眼神看向镜头"）
+            duration: 视频时长（5-15秒）
+            output_path: 输出路径
+        """
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+        # 上传参考图
+        char_url = self._upload_image(character_ref)
+        image_url = self._upload_image(image_ref)
+
+        # 创建生成任务
+        response = requests.post(
+            f"{self.base_url}/video/generate",
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "seedance-2.0",
+                "character_reference": char_url,
+                "image_reference": image_url,
+                "prompt": prompt,
+                "duration": duration,
+                "resolution": "1080x1920"
+            }
         )
-    image_id = img_resp.json()["data"]["video_id"]
 
-    # 2. 上传音频
-    with open(audio_path, "rb") as f:
-        audio_resp = requests.post(
-            "https://api.heygen.com/v1/upload",
-            headers={"authorization": api_key},
-            files={"file": f}
-        )
-    audio_id = audio_resp.json()["data"]["video_id"]
+        task_id = response.json()["data"]["task_id"]
 
-    # 3. 创建任务
-    task_resp = requests.post(
-        "https://api.heygen.com/v1/video/animate",
-        headers={
-            "authorization": api_key,
-            "content-type": "application/json"
-        },
-        json={
-            "source_image": image_id,
-            "source_audio": audio_id,
-            "result_video_sub_folder": "lip_sync"
-        }
-    )
-    task_id = task_resp.json()["data"]["task_id"]
+        # 轮询等待结果
+        while True:
+            status_resp = requests.get(
+                f"{self.base_url}/video/task/{task_id}",
+                headers={"Authorization": f"Bearer {self.api_key}"}
+            )
+            status = status_resp.json()["data"]["status"]
 
-    # 4. 等待结果
-    while True:
-        status_resp = requests.get(
-            f"https://api.heygen.com/v1/video/task/{task_id}",
-            headers={"authorization": api_key}
-        )
-        status = status_resp.json()["data"]["status"]
-        if status == "SUCCESS":
-            url = status_resp.json()["data"]["result_video_url"]
-            # 下载视频
-            video_data = requests.get(url).content
-            output_path = audio_path.replace(".mp3", ".mp4")
-            with open(output_path, "wb") as f:
-                f.write(video_data)
-            return output_path
-        elif status == "FAILED":
-            raise Exception("Lip sync failed")
-        time.sleep(2)
+            if status == "SUCCESS":
+                video_url = status_resp.json()["data"]["video_url"]
+                video_data = requests.get(video_url, timeout=60).content
+                with open(output_path, "wb") as f:
+                    f.write(video_data)
+                print(f"  ✓ 视频已生成: {output_path}")
+                return output_path
+            elif status == "FAILED":
+                raise RuntimeError(f"视频生成失败: {task_id}")
+
+            time.sleep(3)
+
+    def _upload_image(self, path_or_url: str) -> str:
+        """上传图像，返回可访问的 URL"""
+        if path_or_url.startswith('http'):
+            return path_or_url
+        # 本地文件上传逻辑...
+        pass
 ```
-
-**优点**：质量高、速度快、接入简单
-**缺点**：按秒计费（约 $0.1/秒），长期成本高
 
 ---
 
-### 方案 B：SadTalker（本地免费）
+## 四、Prompt 编写技巧（视频生成）
 
-SadTalker 是一个开源的 lip sync 项目，可以在本地运行。
+视频生成的 Prompt 和图像生成不同——它描述的是**运动**，不是**画面**。
 
-#### 安装
+### 运动描述关键词
 
-```bash
-# 1. 克隆项目
-git clone https://github.com/OpenTalker/SadTalker.git
-cd SadTalker
+| 运动类型 | Prompt 示例 |
+|---------|------------|
+| 缓慢推进 | `camera slowly pushes in toward the character's face` |
+| 人物转头 | `character slowly turns head to look at camera` |
+| 眨眼 | `character blinks naturally, subtle eye movement` |
+| 风吹发丝 | `hair gently blowing in the wind, subtle motion` |
+| 呼吸起伏 | `gentle breathing motion, chest rising and falling` |
+| 手持晃动 | `slight handheld camera shake, natural movement` |
+| 光影变化 | `screen light flickers slightly, shadow moves` |
 
-# 2. 安装依赖
-pip install -r requirements.txt
+### 完整的视频 Prompt 模板
 
-# 3. 下载预训练模型（首次运行自动下载）
-# 或者手动下载到 checkpoints/ 目录
+```
+{镜头运动描述}, {角色动作描述}, {环境动态},
+保持画面风格和构图不变,
+ cinematic quality, smooth motion,
+ no sudden movements, no distortion
 ```
 
-#### 使用
-
-```bash
-# 基础用法
-python inference.py \
-    --source_image assets/characters/小明.png \
-    --driving_audio assets/audio/001_小明.mp3 \
-    --result_dir assets/lipsync/ \
-    --still   # 减少头部运动，更适合漫剧
-
-# 添加面部增强
-python inference.py \
-    --source_image assets/characters/小明.png \
-    --driving_audio assets/audio/001_小明.mp3 \
-    --result_dir assets/lipsync/ \
-    --enhancer gfpgan
+示例：
 ```
-
-**优点**：完全免费、可离线运行
-**缺点**：需要 GPU（推荐 NVIDIA 8GB+）、处理速度较慢
+Camera slowly pushes in toward Chen Mo's face,
+he slowly turns his head to look at the screen,
+subtle breathing motion, blue monitor light flickers,
+maintaining the same anime art style and composition,
+cinematic quality, smooth motion, no distortion
+```
 
 ---
 
-### 方案 C：D-ID API
+## 五、分镜→视频片段的映射策略
+
+不是每个分镜都需要生成视频。合理的策略：
+
+| 分镜类型 | 是否生成视频 | 原因 |
+|---------|------------|------|
+| 特写表情 | ✅ 生成 | 微表情增加代入感 |
+| 对话场景 | ✅ 生成 | 人物动作为对话增色 |
+| 环境空镜 | ❌ 静态图 | 无需动态 |
+| 转场镜头 | ⚠️ 简化 | 用 FFmpeg 转场效果即可 |
+| 结尾悬念 | ✅ 生成 | 加强冲击力 |
+
+**建议比例**：约 40-60% 的分镜生成视频片段，其余用静态图+Ken Burns 效果。
+
+---
+
+## 六、片段拼接策略
+
+视频生成后，用 FFmpeg 将所有片段拼接成完整视频：
 
 ```python
-import requests
+# scripts/compose_video.py
 
-def lipsync_with_did(image_path: str, audio_path: str, api_key: str) -> str:
-    """使用 D-ID API"""
-    # D-ID 使用不同的 API 结构
-    # 参考 https://docs.d-id.com/
-    pass
-```
-
----
-
-## 三、要不要做口型同步？
-
-这取决于你的漫剧风格：
-
-| 风格 | 需要 Lip Sync？ | 原因 |
-|------|----------------|------|
-| **动态漫画** | ❌ 不需要 | 画面本身是静态图 + 轻微动效 |
-| **口播型** | ✅ 需要 | 角色面向镜头"说话" |
-| **叙事型** | 可选 | 有对话但画面变化丰富 |
-| ** musical/歌舞** | ✅ 需要 | 口型必须与歌词同步 |
-
-**建议：**
-- 第一部漫剧：先不做口型同步，用动态漫画风格
-- 确认流程跑通后，再考虑加入口型同步
-
----
-
-## 四、简化方案：无需 Lip Sync 的动态漫画
-
-不使用口型同步，而是用**微动效**让画面"活"起来：
-
-```python
-# 使用 FFmpeg 添加简单的缩放/平移效果
-def add_ken_burns_effect(input_img: str, audio_path: str, output_video: str):
+def compose_from_video_clips(
+    video_clips: list[str],    # 生成的视频片段列表
+    static_shots: list[tuple], # (静态图路径, 对应音频路径) 列表
+    output_path: str,
+    resolution: tuple = (1080, 1920)
+):
     """
-    对静态图片添加缓慢缩放和平移效果，
-    配合音频时长生成视频片段
+    将视频片段和静态图混合拼接为最终视频
+
+    策略：
+    - 视频片段直接拼接
+    - 静态图通过 FFmpeg 转为视频片段（Ken Burns 缩放效果）
+    - 音频轨道按顺序对齐
     """
     import subprocess
     import os
 
-    # 获取音频时长
-    probe_cmd = [
-        "ffprobe", "-v", "quiet", "-show_entries",
-        "format=duration", "-of", "csv=p=0", audio_path
-    ]
-    result = subprocess.run(probe_cmd, capture_output=True, text=True)
-    duration = float(result.stdout.strip())
+    temp_dir = "assets/temp/"
+    os.makedirs(temp_dir, exist_ok=True)
 
-    # FFmpeg 滤镜：缓慢缩放（Ken Burns 效果）
+    # 1. 静态图转视频片段（带 Ken Burns 效果）
+    static_videos = []
+    for i, (img_path, audio_path) in enumerate(static_shots):
+        clip_path = f"{temp_dir}static_{i:03d}.mp4"
+
+        # 获取音频时长
+        probe = subprocess.run(
+            ['ffprobe', '-v', 'quiet', '-show_entries', 'format=duration',
+             '-of', 'csv=p=0', audio_path],
+            capture_output=True, text=True
+        )
+        duration = float(probe.stdout.strip())
+
+        cmd = [
+            'ffmpeg',
+            '-loop', '1', '-i', img_path,
+            '-i', audio_path,
+            '-vf', f'scale={resolution[0]}:{resolution[1]}:force_original_aspect_ratio=decrease,pad={resolution[0]}:{resolution[1]}:(ow-iw)/2:(oh-ih)/2',
+            '-c:v', 'libx264', '-tune', 'stillimage',
+            '-c:a', 'aac',
+            '-t', str(duration),
+            '-shortest', '-y', clip_path
+        ]
+        subprocess.run(cmd, check=True, capture_output=True)
+        static_videos.append(clip_path)
+
+    # 2. 合并所有视频片段（视频+静态）
+    concat_list = f"{temp_dir}concat.txt"
+    all_clips = video_clips + static_videos
+
+    with open(concat_list, 'w') as f:
+        for clip in all_clips:
+            f.write(f"file '{os.path.abspath(clip)}'\n")
+
     cmd = [
-        "ffmpeg",
-        "-loop", "1",
-        "-i", input_img,
-        "-i", audio_path,
-        "-vf", (
-            f"scale=1080:1920:force_original_aspect_ratio=decrease,"
-            f"pad=1080:1920:(ow-iw)/2:(oh-ih)/2,"
-            f"zoom=zoomin:x=1080/2:y=1920/2:d=100:t=min({duration}/4,10),"
-            f"zoom=zout:d={duration}"
-        ),
-        "-c:v", "libx264",
-        "-tune", "stillimage",
-        "-c:a", "copy",
-        "-shortest",
-        "-y",
-        output_video
+        'ffmpeg', '-f', 'concat', '-safe', '0',
+        '-i', concat_list,
+        '-c', 'copy', '-y',
+        output_path
     ]
     subprocess.run(cmd, check=True)
-    return output_video
+    print(f"✓ 视频已合成: {output_path}")
+    return output_path
 ```
-
-这种方式比 lip sync 简单得多，但视觉效果已经足够好。
 
 ---
 
-## 五、本章小结
+## 七、成本与效率权衡
 
-| 方案 | 质量 | 成本 | 难度 | 推荐 |
-|------|------|------|------|------|
-| HeyGen API | ★★★★★ | 高 | 低 | 商业项目 |
-| SadTalker | ★★★ | 免费 | 中 | 本地部署 |
-| 动态漫画（无口型） | ★★★★ | 免费 | 低 | 入门首选 |
+| 方案 | 单片段成本 | 单片段耗时 | 质量 | 推荐度 |
+|------|----------|----------|------|--------|
+| Seedance API | ~¥1-2 | 30-60秒 | ★★★★★ | ⭐⭐⭐⭐ |
+| MiniMax API | ~¥0.5-1 | 15-30秒 | ★★★ | ⭐⭐⭐ |
+| ComfyUI 本地 | ¥0（电费） | 2-5分钟 | ★★★★ | ⭐⭐⭐⭐⭐ |
+
+**建议**：先用 API 方案验证全流程，确认满意后切换到本地方案降本。
+
+---
+
+## 八、本章小结
+
+| 步骤 | 操作 | 工具 |
+|------|------|------|
+| 1. 选择分镜 | 确定哪些镜头需要动态效果 | 人工判断 |
+| 2. 构建 Prompt | 描述镜头运动和角色动作 | 英文 Prompt |
+| 3. 生成视频 | 传入角色参考图+分镜图 | Seedance/MiniMax |
+| 4. 拼接合成 | 视频片段+静态图+音频 | FFmpeg |
 
 ---
 

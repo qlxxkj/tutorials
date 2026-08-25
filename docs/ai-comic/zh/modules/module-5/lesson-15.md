@@ -1,164 +1,199 @@
 # 第 15 课：视频合成与后期
 
-> 📌 **学习目标**：掌握 FFmpeg 视频合成技术，完成从素材到成品的最后一步
+> 📌 **学习目标**：掌握 FFmpeg 视频合成技术，将素材合成为可直接发布的成品视频
 > ⏱️ **预计时长**：30 分钟
-> 🎯 **本节节奏**：FFmpeg 基础 → 拼接合成 → 字幕添加 → 完整流程
+> 🎯 **本节节奏**：FFmpeg 基础 → 多轨合成 → 字幕烧录 → 一键成品
 
 ---
 
-## 一、FFmpeg 核心命令
+## 一、合成的核心挑战
 
-### 图片转视频
+我们手头有三种素材：
+- **视频片段**（Seedance 生成的动态镜头）
+- **静态图片**（未生成视频的镜头）
+- **音频轨道**（TTS 生成的配音）
 
-```bash
-# 将图片序列转换为视频
-ffmpeg -framerate 1/5 -i assets/shots/shot_%03d.png -c:v libx264 -pix_fmt yuv420p output.mp4
-```
-
-参数说明：
-- `-framerate 1/5`：每张图片显示 5 秒（倒数表示时长）
-- `%03d`：匹配 `shot_001.png`, `shot_002.png` 等命名
-- `-pix_fmt yuv420p`：兼容所有播放器
-
-### 图片缩放适配
-
-```bash
-# 保持宽高比缩放到 1080 宽度，不足部分用黑色填充
-ffmpeg -i input.png -vf "scale=1080:-1:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2" output.png
-```
+目标是把它们按时间轴对齐，合成一个连贯的视频。
 
 ---
 
-## 二、完整视频合成脚本
+## 二、FFmpeg 核心概念
+
+### 2.1 常用滤镜
+
+| 滤镜 | 作用 | 示例 |
+|------|------|------|
+| `scale` | 缩放 | `scale=1080:1920` |
+| `pad` | 填充黑边 | `pad=1080:1920:(ow-iw)/2:(oh-ih)/2` |
+| `trim` | 裁剪时长 | `trim=0:5`（前5秒） |
+| `setpts` | 调整时间戳 | `setpts=0.5*PTS`（2倍速） |
+| `zoompan` | 缩放动画 | `zoompan=z='min(1.5,1+0.005*t)':d=250` |
+| `subtitles` | 烧录字幕 | `subtitles='file.srt'` |
+| `loudnorm` | 响度标准化 | `loudnorm=I=-14` |
+
+### 2.2 常用编码器参数
+
+| 参数 | 值 | 说明 |
+|------|-----|------|
+| `-c:v` | `libx264` | H.264 视频编码 |
+| `-preset` | `fast` / `medium` / `slow` | 编码速度（越快质量越低） |
+| `-crf` | `18-23` | 质量（越低越好，18 为高质量） |
+| `-c:a` | `aac` | AAC 音频编码 |
+| `-b:a` | `192k` | 音频码率 |
+| `-pix_fmt` | `yuv420p` | 兼容性格式 |
+
+---
+
+## 三、完整合成脚本
 
 ```python
 # scripts/compose_video.py
 import os
 import subprocess
-import re
+import json
 
 
-def compose_final_video(
-    image_paths: list[str],
-    audio_files: list[str],
+def get_video_duration(path: str) -> float:
+    """获取视频/音频文件时长"""
+    cmd = [
+        'ffprobe', '-v', 'quiet', '-show_entries', 'format=duration',
+        '-of', 'json', path
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    return float(json.loads(result.stdout)['format']['duration'])
+
+
+def image_to_video(
+    image_path: str,
+    audio_path: str,
     output_path: str,
-    resolution: tuple = (1080, 1920),
-    fps: int = 30
+    resolution: tuple = (1080, 1920)
 ):
     """
-    合成最终视频
-
-    参数:
-        image_paths: 分镜图片路径列表
-        audio_files: 配音音频路径列表
-        output_path: 输出视频路径
-        resolution: 分辨率 (宽, 高)
-        fps: 帧率
+    将静态图片+音频合成为视频片段
+    使用 Ken Burns 效果（缓慢缩放）增加动态感
     """
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    duration = get_video_duration(audio_path)
 
-    # 构建 FFmpeg 命令
-    # 思路：每张图片 + 对应音频 → 拼接
-
-    # 1. 准备每个镜头的视频片段
-    temp_dir = "assets/temp/"
-    os.makedirs(temp_dir, exist_ok=True)
-
-    # 2. 使用 concat demuxer 拼接
-    concat_list = f"{temp_dir}concat.txt"
-    with open(concat_list, "w") as f:
-        for img_path in image_paths:
-            f.write(f"file '{os.path.abspath(img_path)}'\n")
-            f.write(f"duration 5\n")  # 每镜头默认 5 秒
-        f.write(f"file '{os.path.abspath(image_paths[-1])}'\n")
-
-    # 3. 主合成命令
     cmd = [
-        "ffmpeg",
-        # 图片序列输入
-        "-f", "concat", "-safe", "0",
-        "-i", concat_list,
-        # 音频输入
-        "-f", "concat", "-safe", "0",
-        "-i", create_audio_concat_list(audio_files, temp_dir),
-        # 视频滤镜
-        "-vf", f"scale={resolution[0]}:{resolution[1]}",
-        # 输出
-        "-c:v", "libx264",
-        "-preset", "fast",
-        "-crf", "18",       # 高质量编码
-        "-c:a", "aac",
-        "-b:a", "192k",
-        "-pix_fmt", "yuv420p",
-        "-movflags", "+faststart",
-        "-y",
-        output_path
+        'ffmpeg',
+        '-loop', '1',
+        '-i', image_path,
+        '-i', audio_path,
+        '-vf', (
+            f'scale={resolution[0]}:{resolution[1]}:'
+            f'force_original_aspect_ratio=decrease,'
+            f'pad={resolution[0]}:{resolution[1]}:'
+            f'(ow-iw)/2:(oh-ih)/2,'
+            f'zoompan=z=\'min(1.1,1+0.002*t)\':d={int(duration*30)}:'
+            f's={resolution[0]}x{resolution[1]}:fps=30'
+        ),
+        '-c:v', 'libx264',
+        '-tune', 'stillimage',
+        '-c:a', 'aac',
+        '-t', str(duration),
+        '-shortest',
+        '-y', output_path
     ]
-
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode != 0:
-        raise RuntimeError(f"FFmpeg 错误: {result.stderr}")
-
-    print(f"✓ 视频已生成: {output_path}")
+    subprocess.run(cmd, check=True, capture_output=True)
     return output_path
 
 
-def create_audio_concat_list(audio_files: list[str], temp_dir: str) -> str:
-    """创建音频 concat 列表文件"""
-    list_file = f"{temp_dir}audio_concat.txt"
-    with open(list_file, "w") as f:
-        for audio in audio_files:
-            f.write(f"file '{os.path.abspath(audio)}'\n")
-    return list_file
-```
+def concat_videos(video_paths: list[str], output_path: str):
+    """使用 concat demuxer 拼接多个视频片段"""
+    list_file = "assets/temp/concat_list.txt"
+    with open(list_file, 'w') as f:
+        for path in video_paths:
+            f.write(f"file '{os.path.abspath(path)}'\n")
 
----
+    cmd = [
+        'ffmpeg', '-f', 'concat', '-safe', '0',
+        '-i', list_file,
+        '-c', 'copy', '-y', output_path
+    ]
+    subprocess.run(cmd, check=True, capture_output=True)
+    print(f"✓ 视频已拼接: {output_path}")
 
-## 三、添加字幕
 
-### SRT 字幕文件格式
+def add_subtitles(video_path: str, srt_path: str, output_path: str):
+    """烧录 SRT 字幕到视频"""
+    cmd = [
+        'ffmpeg',
+        '-i', video_path,
+        '-vf', f"subtitles='{os.path.abspath(srt_path)}':force_style='Fontsize=28,PrimaryColour=&H00FFFFFF,OutlineColour=&H80000000,Outline=1'",
+        '-c:a', 'copy',
+        '-y', output_path
+    ]
+    subprocess.run(cmd, check=True, capture_output=True)
+    print(f"✓ 已添加字幕: {output_path}")
 
-```
-1
-00:00:01,000 --> 00:00:04,000
-又一个深夜，代码还没写完……
 
-2
-00:00:05,000 --> 00:00:07,500
-还有三行……就三行……
+def add_bgm(video_path: str, bgm_path: str, bgm_volume: float = 0.12, output_path: str = None):
+    """添加背景音乐，音量压低不盖过配音"""
+    if output_path is None:
+        output_path = video_path.replace('.mp4', '_bgm.mp4')
 
-3
-00:00:12,000 --> 00:00:15,000
-你想不想看看另一个自己？
-```
+    cmd = [
+        'ffmpeg',
+        '-i', video_path,
+        '-i', bgm_path,
+        '-filter_complex',
+        f'[1:a]volume={bgm_volume},aloop=loop=-1:size=2e+09[bgm];'
+        f'[0:a][bgm]amix=inputs=2:duration=first[a]',
+        '-map', '0:v', '-map', '[a]',
+        '-c:v', 'copy', '-c:a', 'aac',
+        '-y', output_path
+    ]
+    subprocess.run(cmd, check=True, capture_output=True)
+    print(f"✓ 已添加 BGM: {output_path}")
 
-### 自动生成 SRT
 
-```python
+def normalize_audio(video_path: str, output_path: str = None) -> str:
+    """统一音频响度到 -14 LUFS"""
+    if output_path is None:
+        output_path = video_path.replace('.mp4', '_final.mp4')
+
+    cmd = [
+        'ffmpeg', '-i', video_path,
+        '-af', 'loudnorm=I=-14:TP=-1.0:LRA=11',
+        '-c:v', 'copy', '-y', output_path
+    ]
+    subprocess.run(cmd, check=True, capture_output=True)
+    print(f"✓ 已标准化音频: {output_path}")
+    return output_path
+
+
 def generate_srt(shots: list[dict], output_path: str = "assets/subtitles.srt"):
-    """根据分镜数据自动生成 SRT 字幕文件"""
-    with open(output_path, "w", encoding="utf-8") as f:
-        for i, shot in enumerate(shots, 1):
-            dialogue = shot.get("dialogue", "")
+    """根据分镜自动生成 SRT 字幕"""
+    import re
+
+    # 计算每个镜头的起始时间（假设每个镜头约 5 秒）
+    current_time = 0.0
+    line_num = 1
+
+    with open(output_path, 'w', encoding='utf-8') as f:
+        for shot in shots:
+            dialogue = shot.get('dialogue', '')
             if not dialogue:
                 continue
 
-            # 简化时间计算（实际应用中需要根据音频精确计算）
-            start_sec = (i - 1) * 5
-            end_sec = start_sec + 4
+            # 估算时长（根据字符数，每字符约 0.15 秒）
+            duration = max(2.0, len(dialogue) * 0.15)
+            start_ts = format_srt_time(current_time)
+            end_ts = format_srt_time(current_time + duration)
 
-            start_ts = format_time(start_sec)
-            end_ts = format_time(end_sec)
-
-            f.write(f"{i}\n")
+            f.write(f"{line_num}\n")
             f.write(f"{start_ts} --> {end_ts}\n")
             f.write(f"{dialogue}\n\n")
+
+            current_time += duration
+            line_num += 1
 
     print(f"✓ 字幕已生成: {output_path}")
 
 
-def format_time(seconds: float) -> str:
-    """秒数转为 SRT 时间格式"""
+def format_srt_time(seconds: float) -> str:
+    """秒数转为 SRT 时间格式 HH:MM:SS,mmm"""
     hours = int(seconds // 3600)
     minutes = int((seconds % 3600) // 60)
     secs = int(seconds % 60)
@@ -166,179 +201,128 @@ def format_time(seconds: float) -> str:
     return f"{hours:02d}:{minutes:02d}:{secs:02d},{millis:03d}"
 ```
 
-### FFmpeg 烧录字幕
-
-```python
-def burn_subtitles(video_path: str, srt_path: str, output_path: str):
-    """将 SRT 字幕烧录到视频中"""
-    cmd = [
-        "ffmpeg",
-        "-i", video_path,
-        "-vf", f"subtitles='{os.path.abspath(srt_path)}':force_style='Fontsize=24'",
-        "-c:a", "copy",
-        "-y",
-        output_path
-    ]
-    subprocess.run(cmd, check=True)
-```
-
 ---
 
-## 四、添加背景音乐
+## 四、一键合成全流程
 
 ```python
-def add_bgm(video_path: str, bgm_path: str, bgm_volume: float = 0.15, output_path: str = None):
-    """添加背景音乐，音量自动压低不盖过配音"""
-    if output_path is None:
-        output_path = video_path.replace(".mp4", "_with_bgm.mp4")
-
-    cmd = [
-        "ffmpeg",
-        "-i", video_path,
-        "-i", bgm_path,
-        "-filter_complex",
-        f"[1:a]volume={bgm_volume}[bgm];[0:a][bgm]amix=inputs=2:duration=first",
-        "-c:v", "copy",
-        "-c:a", "aac",
-        "-y",
-        output_path
-    ]
-    subprocess.run(cmd, check=True)
-    print(f"✓ 已添加 BGM: {output_path}")
-```
-
----
-
-## 五、一键合成脚本
-
-```python
-def one_click_compose(
+def one_click_final_compose(
     shots: list[dict],
     image_paths: list[str],
     audio_files: list[str],
+    video_clips: list[str] = None,
     output_path: str = "output/final.mp4",
-    add_bgm_path: str = None
+    bgm_path: str = None
 ):
     """
     一键完成视频合成全流程
 
     流程:
-    1. 图片序列 → 视频片段
-    2. 音频对齐 → 合成音画
-    3. 添加字幕
-    4. 添加 BGM（可选）
-    5. 响度标准化
+    1. 生成 SRT 字幕
+    2. 静态图转视频（Ken Burns 效果）
+    3. 拼接所有视频片段
+    4. 烧录字幕
+    5. 添加 BGM
+    6. 响度标准化
     """
     import shutil
 
-    # 1. 生成字幕
-    srt_path = output_path.replace(".mp4", ".srt")
+    video_clips = video_clips or []
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    # Step 1: 生成字幕
+    srt_path = output_path.replace('.mp4', '.srt')
     generate_srt(shots, srt_path)
 
-    # 2. 图片转视频（每张图片对应一段）
-    temp_videos = []
-    for i, (img, audio) in enumerate(zip(image_paths, audio_files)):
-        temp_video = f"assets/temp/shot_{i+1:03d}.mp4"
+    # Step 2: 静态图转视频片段
+    temp_dir = "assets/temp/"
+    os.makedirs(temp_dir, exist_ok=True)
 
-        # 获取音频时长
-        probe = subprocess.run(
-            ["ffprobe", "-v", "quiet", "-show_entries", "format=duration",
-             "-of", "csv=p=0", audio],
-            capture_output=True, text=True
-        )
-        duration = float(probe.stdout.strip())
+    static_video_paths = []
+    shot_idx = 0
+    audio_idx = 0
 
-        # 生成视频片段
-        cmd = [
-            "ffmpeg",
-            "-loop", "1", "-i", img,
-            "-i", audio,
-            "-vf", f"scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2",
-            "-c:v", "libx264", "-tune", "stillimage",
-            "-c:a", "aac",
-            "-t", str(duration),
-            "-shortest",
-            "-y", temp_video
-        ]
-        subprocess.run(cmd, check=True, capture_output=True)
-        temp_videos.append(temp_video)
+    for i, (img_path, aud_path) in enumerate(zip(image_paths, audio_files)):
+        clip_path = f"{temp_dir}clip_{i:03d}.mp4"
+        image_to_video(img_path, aud_path, clip_path)
+        static_video_paths.append(clip_path)
+        shot_idx += 1
+        audio_idx += 1
 
-    # 3. 拼接所有片段
-    concat_list = "assets/temp/concat.txt"
-    with open(concat_list, "w") as f:
-        for v in temp_videos:
-            f.write(f"file '{os.path.abspath(v)}'\n")
+    # Step 3: 拼接视频片段（视频生成 + 静态图转换）
+    all_clips = video_clips + static_video_paths
+    concat_list = f"{temp_dir}concat.txt"
+    with open(concat_list, 'w') as f:
+        for clip in all_clips:
+            f.write(f"file '{os.path.abspath(clip)}'\n")
 
-    cmd = [
-        "ffmpeg", "-f", "concat", "-safe", "0",
-        "-i", concat_list,
-        "-c", "copy", "-y",
-        output_path
-    ]
-    subprocess.run(cmd, check=True)
+    composed = output_path.replace('.mp4', '_composed.mp4')
+    concat_videos(all_clips, composed)
 
-    # 4. 添加 BGM
-    if add_bgm_path and os.path.exists(add_bgm_path):
-        bgm_output = output_path.replace(".mp4", "_bgm.mp4")
-        add_bgm(output_path, add_bgm_path, output_path=bgm_output)
-        output_path = bgm_output
+    # Step 4: 烧录字幕
+    with_subs = output_path.replace('.mp4', '_subs.mp4')
+    add_subtitles(composed, srt_path, with_subs)
 
-    # 5. 响度标准化
-    final_path = output_path.replace(".mp4", "_final.mp4")
-    cmd = [
-        "ffmpeg", "-i", output_path,
-        "-af", "loudnorm=I=-14:TP=-1.0:LRA=11",
-        "-c:v", "copy", "-y",
-        final_path
-    ]
-    subprocess.run(cmd, check=True)
+    # Step 5: 添加 BGM
+    final = with_subs
+    if bgm_path and os.path.exists(bgm_path):
+        final = output_path.replace('.mp4', '_bgm.mp4')
+        add_bgm(with_subs, bgm_path, output_path=final)
+
+    # Step 6: 响度标准化
+    result = final.replace('.mp4', '_final.mp4')
+    normalize_audio(final, result)
 
     # 清理临时文件
-    shutil.rmtree("assets/temp/", ignore_errors=True)
+    shutil.rmtree(temp_dir, ignore_errors=True)
 
-    print(f"🎬 最终视频: {final_path}")
-    return final_path
+    # 重命名为最终文件名
+    if result != output_path:
+        os.replace(result, output_path)
+
+    print(f"\n🎬 最终视频: {output_path}")
+    return output_path
 ```
 
 ---
 
-## 六、视频质量检查
+## 五、常用 FFmpeg 命令速查
 
-```python
-def check_video(video_path: str):
-    """检查生成的视频信息"""
-    import json
+```bash
+# 查看视频信息
+ffprobe -v quiet -show_format -show_streams video.mp4
 
-    cmd = [
-        "ffprobe", "-v", "quiet", "-print_format", "json",
-        "-show_format", "-show_streams", video_path
-    ]
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    data = json.loads(result.stdout)
+# 图片转视频（每秒 1 帧 = 每张图片 1 秒）
+ffmpeg -framerate 1 -i shot_%03d.png -c:v libx264 -pix_fmt yuv420p output.mp4
 
-    fmt = data["format"]
-    video_stream = next(s for s in data["streams"] if s["codec_type"] == "video")
+# 视频慢放 2 倍
+ffmpeg -i input.mp4 -filter_complex "[0:v]setpts=2.0*PTS[v]" -map "[v]" -c:a copy output.mp4
 
-    print(f"📹 视频信息：")
-    print(f"   分辨率: {video_stream.get('width')}x{video_stream.get('height')}")
-    print(f"   时长: {float(fmt['duration']):.1f} 秒")
-    print(f"   码率: {int(fmt['bit_rate'])/1000:.0f} kbps")
-    print(f"   编码: {video_stream.get('codec_name')}")
-    print(f"   帧率: {video_stream.get('r_frame_rate')}")
+# 视频加速 2 倍
+ffmpeg -i input.mp4 -filter_complex "[0:v]setpts=0.5*PTS[v]" -map "[v]" -c:a copy output.mp4
+
+# 裁剪视频前 30 秒
+ffmpeg -i input.mp4 -t 30 -c copy output.mp4
+
+# 提取音频
+ffmpeg -i video.mp4 -vn -acodec copy audio.aac
+
+# 视频转 GIF（用于预览）
+ffmpeg -i input.mp4 -vf "scale=480:-1:flags=lanczos" -ss 0 -t 3 output.gif
 ```
 
 ---
 
-## 七、本章小结
+## 六、本章小结
 
-| 操作 | FFmpeg 关键参数 |
-|------|----------------|
-| 图片转视频 | `-loop 1 -i input.png -t duration` |
-| 视频拼接 | `-f concat -safe 0 -i list.txt` |
-| 缩放适配 | `scale=...,pad=...` |
-| 添加字幕 | `-vf "subtitles='file.srt'"` |
-| 添加 BGM | `-filter_complex "[1:a]volume=0.15"` |
-| 响度标准化 | `-af "loudnorm=I=-14"` |
+| 步骤 | 操作 | 关键参数 |
+|------|------|---------|
+| 字幕生成 | SRT 自动格式化 | 按台词长度估算时长 |
+| 图片→视频 | Ken Burns 缩放 | `zoompan` 滤镜 |
+| 拼接 | concat demuxer | `-f concat -safe 0` |
+| 烧字幕 | subtitles 滤镜 | `force_style` 控制样式 |
+| 加 BGM | amix 混音 | `volume=0.12` 压低音量 |
+| 标准化 | loudnorm 滤镜 | `I=-14` 响度统一 |
 
 ---
 
