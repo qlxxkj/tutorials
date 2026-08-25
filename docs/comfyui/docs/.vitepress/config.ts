@@ -2,7 +2,7 @@ import { defineConfig, defaultTheme } from 'vitepress'
 
 export default defineConfig({
   title: 'ComfyUI 完全指南',
-  description: '从零掌握 ComfyUI 本地图像生成，制作高质量 AI 漫剧',
+  description: '从零掌握 ComfyUI 本地图像生成',
   lang: 'zh-CN',
   base: '/comfyui/',
 
@@ -74,7 +74,7 @@ export default defineConfig({
           ],
         },
         {
-          text: '模块五：漫剧实战',
+          text: '模块五：图像实战',
           collapsed: false,
           items: [
             { text: '第 13 课：生成角色参考图', link: '/zh/modules/module-5/lesson-13' },
@@ -86,7 +86,7 @@ export default defineConfig({
           text: '模块六：高效工作流',
           collapsed: false,
           items: [
-            { text: '项目一：搭建个人漫剧生产流', link: '/zh/modules/module-6/project-1' },
+            { text: '项目一：搭建个人图像生产流', link: '/zh/modules/module-6/project-1' },
             { text: '项目二：建立风格模板库', link: '/zh/modules/module-6/project-2' },
             { text: '项目三：批量并行生产', link: '/zh/modules/module-6/project-3' },
           ],

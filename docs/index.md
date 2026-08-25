@@ -3,8 +3,8 @@ layout: home
 hero:
   name: qlxxkj
   text: 教程中心
-  tagline: AI 编程 · 跨境电商 · 实战教程
-  description: 由 qlxxkj 出品，专注于 AI 编程助手和跨境电商运营的实用教程
+  tagline: AI 编程 · 图像生成 · 跨境电商 · 实战教程
+  description: 由 qlxxkj 出品，专注于 AI 编程、图像生成和跨境电商运营的实用教程
   actions:
     - theme: brand
       text: Claude Code 入门
