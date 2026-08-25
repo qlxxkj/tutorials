@@ -2,13 +2,13 @@
 
 > 📌 **学习目标**：综合运用前面所有技能，独立完成一部完整的 AI 漫剧
 > ⏱️ **预计时长**：60 分钟
-> 🎯 **本节节奏**：需求分析 → 分步实现 → 运行验证
+> 🎯 **本节节奏**：需求分析 → 分步操作 → 运行验证
 
 ---
 
 ## 一、项目目标
 
-制作一部 **1-2 分钟**的悬疑风格 AI 漫剧，包含：
+制作一部 **60 秒左右**的悬疑风格 AI 漫剧，包含：
 - 15-20 个分镜画面
 - 3-5 个角色的配音
 - 字幕和背景音乐
@@ -20,20 +20,20 @@
 
 ```
 Step 1: 确定故事 → 10 分钟
-Step 2: 生成剧本 → 5 分钟
-Step 3: 生成角色参考图 → 10 分钟
-Step 4: 生成分镜画面 → 15 分钟
-Step 5: 生成配音 → 10 分钟
-Step 6: 合成视频 → 10 分钟
+Step 2: 生成剧本 → 15 分钟
+Step 3: 生成角色参考图 → 15 分钟
+Step 4: 生成分镜画面 → 20 分钟
+Step 5: 生成配音 → 15 分钟
+Step 6: 合成视频 → 15 分钟
 ```
 
 ---
 
-## 三、分步实现
+## 三、分步操作
 
 ### Step 1：确定故事
 
-选择你的故事主题。以下是一些灵感：
+选择一个你想讲的故事。以下是几个灵感：
 
 | 主题 | 风格 | 亮点 |
 |------|------|------|
@@ -46,97 +46,165 @@ Step 6: 合成视频 → 10 分钟
 
 ---
 
-### Step 2：运行完整流程
+### Step 2：生成剧本
 
-创建 `.env` 文件（参考 `.env.example`），然后运行：
+打开 ChatGPT / Claude / DeepSeek，输入：
 
-```bash
-# 一键生成
-python scripts/main.py --topic "程序员深夜加班发现神秘代码" --style anime
+```
+请帮我写一个 AI 漫剧剧本：
+
+主题：程序员深夜加班发现代码中出现不属于他的文字
+风格：悬疑
+集数：1 集（约 60 秒，15-20 个镜头）
+
+要求：
+1. 每个镜头包含：场景、镜头角度、画面描述、角色、情绪、对话/旁白
+2. 开场要有钩子，结尾要有悬念
+3. 对话简短，每句不超过 20 字
+4. 画面描述要具体，方便AI绘图
+
+请使用以下格式输出：
+【场景 N - 地点·时间·光线】
+镜头角度：...
+画面描述：...
+角色：...
+情绪：...
+对话/旁白：...
 ```
 
-脚本会自动执行以下步骤：
+生成后检查：
+- 镜头数是否在 15-20 个
+- 每个镜头是否包含所有字段
+- 开头是否有吸引力
+- 结尾是否有悬念
 
-1. **剧本生成** → 调用 GPT-4o
-2. **角色设定** → 调用 GPT-Image-1
-3. **分镜解析** → Python 正则解析
-4. **画面生成** → 批量调用 GPT-Image-1
-5. **配音生成** → 调用 OpenAI TTS
-6. **视频合成** → FFmpeg 拼接
+不满意就追问修改，比如：
+```
+第 3 个镜头的情绪太平了，改成"震惊"
+第 7 个场景的对话太直白，改得更隐晦一些
+```
 
 ---
 
-### Step 3：检查结果
+### Step 3：生成角色参考图
 
-生成完成后，查看输出目录：
+根据剧本中的角色，用即梦或可灵生成参考图。
 
-```bash
-ls output/
-# script.md        # 生成的剧本
-# final.mp4        # 最终视频
+以"陈默"为例：
+
+1. 打开即梦，选择"图片生成"
+2. 输入描述：
 ```
+Character design reference sheet,
+28-year-old Asian male programmer, short messy black hair,
+black rectangular glasses, grey hooded sweatshirt,
+slim build, tired eyes with slight dark circles,
+neutral expression facing forward,
+clean white background,
+front view and side view,
+anime style, cel shaded, vibrant colors,
+high quality detailed illustration,
+No text, no watermark
+```
+3. 选择 9:16 比例，生成 4 张
+4. 挑选最满意的一张下载保存，命名为 `陈默.png`
 
-打开 `final.mp4` 预览效果。
+如果有多个角色，重复以上步骤。
 
 ---
 
-### Step 4：调整优化
+### Step 4：生成分镜画面
 
-如果效果不满意，可以针对性调整：
+按照剧本顺序，逐镜头生成画面。
 
-| 问题 | 调整方法 |
-|------|---------|
-| 画面质量差 | 优化 Prompt，增加细节描述 |
-| 角色不一致 | 重新生成角色参考图，检查 seed |
-| 配音不自然 | 调整语速、添加标点表达情绪 |
-| 画面时长不对 | 检查音频时长，调整图片显示时间 |
-| 视频闪烁 | 确保帧率一致，使用 `-tune stillimage` |
+以第一个镜头为例：
+
+1. 打开即梦/可灵
+2. 上传 `陈默.png` 作为参考图
+3. 输入 Prompt：
+```
+anime comic panel,
+A dimly lit apartment at night, rain against the window,
+28-year-old Asian male with messy black hair and black glasses,
+wearing grey hoodie, sitting at desk,
+medium shot, exhausted expression,
+Blue monitor glow illuminating his face,
+high quality anime illustration, cinematic composition,
+No text, no watermark
+```
+4. 选择 9:16 比例，生成并筛选
+5. 下载保存为 `shot_001.png`
+
+重复以上步骤，生成所有镜头的画面。
+
+**小技巧**：
+- 先试第一张，确认 Prompt 效果满意后再批量
+- 每次都在参考图位置上传角色图
+- 不满意的直接重新生成，不要将就
 
 ---
 
-## 四、完整代码速查
+### Step 5：生成配音
 
-如果你不想用 `main.py`，也可以分步执行：
+打开剪映专业版：
 
-```python
-# 1. 生成剧本
-from scripts.write_script import write_script
-script = write_script("程序员深夜加班发现神秘代码")
+1. 点击"文本"→"新建文本"
+2. 输入台词内容
+3. 点击"文本朗读"，选择音色
+   - 陈默：选择"年轻男声"
+   - 旁白：选择"沉稳男声"
+4. 根据需要调整语速（紧张时放慢，兴奋时加快）
+5. 生成后导出为音频文件
 
-# 2. 解析分镜
-from scripts.extract_shots import parse_script_to_shots
-shots = parse_script_to_shots(script)
+为每个有台词的镜头生成配音，保存到 `assets/audio/` 目录。
 
-# 3. 生成角色
-from scripts.create_characters import generate_character_reference
-char_ref = generate_character_reference("主角", "25岁男性程序员", "anime")
+**技巧**：在台词中加入标点符号来引导情感：
+- "什么……？" → 犹豫/恐惧
+- "你到底是谁！！！" → 愤怒
+- "我……我知道了……" → 悲伤/释然
 
-# 4. 生成画面
-from scripts.generate_shots import batch_generate_shots
-images = batch_generate_shots(shots, char_ref["path"])
+---
 
-# 5. 生成配音
-from scripts.generate_voice import generate_full_audio
-audios = generate_full_audio(shots)
+### Step 6：合成视频
 
-# 6. 合成视频
-from scripts.compose_video import compose_final_video
-compose_final_video(images, audios, "output/final.mp4")
-```
+打开剪映专业版：
+
+1. **导入素材**：导入所有分镜图片和配音音频
+2. **排列顺序**：按剧本顺序拖到时间轴
+3. **调整时长**：根据音频时长调整图片显示时长
+4. **添加字幕**：使用"智能字幕"自动识别，或手动添加
+5. **添加转场**：相邻镜头之间加"交叉溶解"（0.3秒）
+6. **添加 BGM**：选择一个悬疑风格的背景音乐，音量调到 10-15%
+7. **导出**：1080x1920，30fps，MP4 格式
+
+---
+
+## 四、完成检查
+
+制作完成后，逐项检查：
+
+- [ ] 视频时长在 60 秒左右
+- [ ] 角色形象一致（发型、眼镜、衣服没变）
+- [ ] 配音清晰，情绪到位
+- [ ] 字幕没有错别字
+- [ ] BGM 不盖过配音
+- [ ] 结尾有悬念感
 
 ---
 
 ## 五、本章小结
 
-| 阶段 | 工具 | 时间 |
+| 步骤 | 工具 | 时间 |
 |------|------|------|
-| 构思 | 你的创意 | 10min |
-| 剧本 | GPT-4o | 5min |
-| 角色 | GPT-Image-1 | 10min |
-| 画面 | GPT-Image-1 × 20 | 15min |
-| 配音 | OpenAI TTS | 10min |
-| 合成 | FFmpeg | 10min |
-| **总计** | | **~60min** |
+| 构思故事 | 你的创意 | 10min |
+| 生成剧本 | ChatGPT/Claude | 15min |
+| 角色参考图 | 即梦/可灵 | 15min |
+| 分镜画面 | 即梦/可灵 × 20 | 20min |
+| 配音 | 剪映/ElevenLabs | 15min |
+| 合成视频 | 剪映 | 15min |
+| **总计** | | **约 90min** |
+
+第一部漫剧通常需要 1.5 小时左右，熟练后可以压缩到 40-50 分钟。
 
 ---
 

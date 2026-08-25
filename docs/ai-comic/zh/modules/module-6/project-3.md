@@ -1,141 +1,138 @@
-# 项目三：部署自动化流水线
+# 项目三：批量发布与长期运营
 
-> 📌 **学习目标**：将手动流程升级为可自动触发的生产管线
-> ⏱️ **预计时长**：45 分钟
-> 🎯 **本节节奏**：CI/CD → 定时任务 → 监控告警
-
----
-
-## 一、为什么需要自动化？
-
-当你要批量生产或定时发布时，手动运行脚本不够用：
-
-- 每天手动运行太麻烦
-- 需要记录每次生成的状态
-- 出错了需要知道哪里出了问题
-- 多人协作需要统一的入口
+> 📌 **学习目标**：学会建立稳定的发布节奏，让 AI 漫剧成为可持续的内容产品
+> ⏱️ **预计时长**：20 分钟
+> 🎯 **本节节奏**：发布节奏 → 内容规划 → 数据分析 → 持续优化
 
 ---
 
-## 二、GitHub Actions 自动构建
+## 一、为什么要建立发布节奏？
 
-### 2.1 创建 workflow 文件
+AI 漫剧最大的优势不是"能做一部"，而是"能持续做"。
 
-在 `.github/workflows/build.yml` 中：
-
-```yaml
-name: AI Comic Build
-
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:  # 支持手动触发
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Generate comic
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TOPIC: "程序员深夜加班"
-          STYLE: "anime"
-        run: python scripts/main.py --topic "$TOPIC" --style "$STYLE"
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: comic-output
-          path: output/
-```
-
-### 2.2 配置 Secrets
-
-在 GitHub 仓库 Settings → Secrets and variables → Actions 中添加：
-
-```
-OPENAI_API_KEY=sk-xxxxxxxx
-```
+短视频平台的算法喜欢**稳定更新**的创作者——日更或隔日更的账号，流量会比随性发布的账号高很多。
 
 ---
 
-## 三、定时生成
+## 二、确定发布频率
 
-使用 cron 表达式设置定时任务：
+根据你的制作效率选择：
 
-```yaml
-# 每天早上 9 点自动生成一部新漫剧
-schedule:
-  - cron: '0 9 * * *'
-```
+| 频率 | 适合人群 | 单集耗时 | 周工作量 |
+|------|---------|---------|---------|
+| 日更 | 熟练后 + 系列化 | 30-40分钟 | 3-5小时 |
+| 隔日更 | 半熟练 | 40-60分钟 | 3-4小时 |
+| 周更2集 | 新手到中级 | 60-90分钟 | 2-3小时 |
+| 周更1集 | 起步阶段 | 90分钟+ | 1.5小时 |
+
+**建议**：先从周更 1-2 集开始，等流程熟练后再提速。
 
 ---
 
-## 四、监控与日志
+## 三、内容规划
 
-### 4.1 生成日志
+### 3.1 系列化思维
 
-```python
-import logging
+不要把每集当成独立作品，要思考"这一季讲什么"：
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("logs/comic_build.log"),
-        logging.StreamHandler()
-    ]
-)
-
-logger = logging.getLogger(__name__)
-
-# 使用时
-logger.info(f"开始生成第 {i+1}/{total} 个镜头")
-logger.warning(f"API 限流，等待 5 秒后重试")
-logger.error(f"生成失败: {e}")
+```
+系列示例：
+《陈默的深夜事件》第一季（10集）
+- 每集一个独立的悬疑小故事
+- 主角不变，世界观不变
+- 每集结尾留悬念，引导看下一集
 ```
 
-### 4.2 失败告警
+系列化的好处：
+- 观众会因为想看"下一集"而关注
+- 角色和风格已经固定，制作速度越来越快
+- 容易形成品牌认知
 
-```python
-import smtplib
-from email.mime.text import MIMEText
+### 3.2 提前储备
 
-def send_alert(subject: str, message: str, to: str):
-    """发送失败告警邮件"""
-    msg = MIMEText(message)
-    msg["Subject"] = f"[AI漫剧] {subject}"
-    msg["To"] = to
-    msg["From"] = "your@email.com"
+永远不要只准备 1 集的内容。建议保持 **3-5 集储备**：
 
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.starttls()
-    server.login("your@email.com", "your_password")
-    server.send_message(msg)
-    server.quit()
+```
+正在发布：第 1 集
+已准备好：第 2-3 集（可以立即发布）
+制作中：第 4-5 集（下周发布）
+构思中：第 6-7 集（后续规划）
+```
+
+这样即使某周没时间制作，也不会断更。
+
+### 3.3 建立素材库
+
+随着制作次数增加，积累以下内容：
+
+```
+角色库：
+├── 陈默.png（主角，固定复用）
+├── 神秘人.png（反派，固定复用）
+└── 新角色.png（每部剧新增）
+
+风格库：
+├── 悬疑风格_Prompt模板.txt
+├── 爱情风格_Prompt模板.txt
+└── 喜剧风格_Prompt模板.txt
+
+BGM库：
+├── 悬疑背景音.mp3
+├── 温情背景音.mp3
+└── 轻松背景音.mp3
 ```
 
 ---
 
-## 五、本章小结
+## 四、数据分析与优化
 
-| 组件 | 用途 | 实现方式 |
-|------|------|---------|
-| CI/CD | 代码变更自动构建 | GitHub Actions |
-| 定时任务 | 每天自动生成 | cron + workflow_dispatch |
-| 日志记录 | 追踪生成过程 | Python logging |
-| 失败告警 | 及时通知问题 | SMTP 邮件 |
+每发布一集后，关注以下数据：
+
+| 数据指标 | 关注点 | 优化方向 |
+|---------|--------|---------|
+| 完播率 | 观众是否看完了 | 开头钩子够不够强，节奏是否拖沓 |
+| 点赞率 | 观众是否喜欢 | 剧情是否有共鸣，画面是否精美 |
+| 评论数 | 观众是否有讨论欲 | 是否有悬念/争议点引发互动 |
+| 转发数 | 观众是否愿意分享 | 内容是否有传播价值 |
+| 关注转化率 | 观众是否想追更 | 结尾悬念是否足够强 |
+
+**简单复盘模板**（每集发布后花 5 分钟填写）：
+
+```
+第 N 集复盘：
+- 完播率：__%  （平台平均：__%）
+- 点赞率：__%
+- 最高峰：第 __ 秒（观众最感兴趣的点）
+- 流失点：第 __ 秒（观众流失最多的地方）
+- 改进方向：________________
+```
 
 ---
 
-*至此，本课程全部内容完成！回到 [课程回顾](../summary.md)*
+## 五、成本控制
+
+批量生产后，成本会摊薄：
+
+| 项目 | 单集成本 | 批量后成本 | 节省方式 |
+|------|---------|----------|---------|
+| 角色图 | ¥5-10 | ¥0（复用） | 固定角色不重画 |
+| 分镜画面 | ¥50-80 | ¥30-50 | 相似场景复用描述 |
+| 配音 | ¥3-5 | ¥3-5 | 固定不变 |
+| BGM | ¥0 | ¥0 | 使用免费素材库 |
+| **总计** | **¥58-95** | **¥33-55** | **节省 40-50%** |
+
+---
+
+## 六、本章小结
+
+| 要点 | 说明 |
+|------|------|
+| 确定频率 | 从周更 1-2 集开始，逐步提速 |
+| 系列化 | 固定主角和世界观，形成IP |
+| 提前储备 | 保持 3-5 集库存，不断更 |
+| 数据分析 | 每集复盘，持续优化 |
+| 成本控制 | 角色和风格复用，降低边际成本 |
+
+---
+
+*至此，本课程全部内容完成！回到 [课程总览](../summary.md)*

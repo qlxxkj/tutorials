@@ -1,175 +1,193 @@
 # 项目二：批量生产系列短剧
 
-> 📌 **学习目标**：建立高效的批量生产流程，实现日更能力
-> ⏱️ **预计时长**：45 分钟
-> 🎯 **本节节奏**：模板化 → 批量处理 → 效率优化
+> 📌 **学习目标**：建立高效的制作流程，实现系列短剧的快速生产
+> ⏱️ **预计时长**：40 分钟
+> 🎯 **本节节奏**：复用策略 → 批量技巧 → 效率提升
 
 ---
 
 ## 一、为什么要批量生产？
 
-单部漫剧耗时约 1 小时。如果你想在抖音/快手日更，需要把时间压缩到 **15-20 分钟**。
+单部漫剧耗时约 1.5 小时。如果你想在抖音/快手日更，需要把时间压缩到 **30-40 分钟**。
 
-关键策略：**复用已有资源，只生成变化的部分**。
+核心策略：**复用已有资源，只生成变化的部分。**
 
 ---
 
-## 二、模板化策略
+## 二、复用策略
 
-### 2.1 建立角色库
+### 2.1 角色复用
 
-同一世界观下的角色只需生成一次参考图：
+同一系列的角色只需生成一次参考图：
 
 ```
-assets/characters/
-├── 主角.png      # 固定复用
-├── 配角A.png     # 固定复用
-└── 反派.png      # 固定复用
+系列1的角色：
+- 陈默.png    ← 复用
+- 神秘人.png  ← 复用
+
+系列2的角色（全新故事）：
+- 林夏.png    ← 新绘制
+- 邻居王姐.png ← 新绘制
 ```
 
-### 2.2 建立风格模板
+### 2.2 风格模板
 
-```python
-# config.py
-STYLES = {
-    "suspense": {
-        "prompt_suffix": "dark atmosphere, dramatic lighting, film noir style",
-        "color_palette": ["#1a1a2e", "#16213e", "#0f3460", "#e94560"],
-    },
-    "romance": {
-        "prompt_suffix": "soft lighting, warm colors, dreamy atmosphere",
-        "color_palette": ["#ffd3e6", "#ffaaa5", "#ff8c94", "#e8a0bf"],
-    },
-    "sci-fi": {
-        "prompt_suffix": "neon lights, futuristic, cyberpunk aesthetic",
-        "color_palette": ["#0f0f23", "#00d4ff", "#ff006e", "#8338ec"],
-    }
-}
+建立几种固定风格，后续直接套用：
+
+```
+悬疑风格：
+- 画风：anime style, dark atmosphere, dramatic lighting
+- 色调：深蓝、黑色、红色点缀
+- 光影：高对比度，深阴影
+
+治愈风格：
+- 画风：watercolor style, soft edges, warm colors
+- 色调：米色、浅蓝、暖黄
+- 光影：柔和自然光
 ```
 
-### 2.3 建立剧本模板
+每次做同风格系列时，直接复制风格参数。
 
-不同题材有固定的剧本结构模板：
+### 2.3 剧本模板
 
-```markdown
-【悬疑模板】
-开场钩子（3秒）→ 日常铺垫（10秒）→ 异常出现（5秒）→ 调查推进（20秒）→ 真相揭示（10秒）→ 悬念结尾（5秒）
+不同类型的故事有固定的结构模板：
 
-【爱情模板】
+```
+悬疑模板：
+开场钩子（3秒）→ 日常铺垫（10秒）→ 异常出现（5秒）
+→ 调查推进（20秒）→ 真相揭示（10秒）→ 悬念结尾（5秒）
+
+爱情模板：
 相遇（5秒）→ 互动（15秒）→ 转折（10秒）→ 升华（10秒）→ 余韵（5秒）
 ```
 
 ---
 
-## 三、批量生产脚本
+## 三、批量生产的操作流程
 
-```python
-# scripts/batch producer.py
-import os
-import asyncio
-from pathlib import Path
+### Step 1：准备批量剧本
 
-async def batch_produce(
-    topics: list[str],
-    style: str = "anime",
-    output_dir: str = "output/"
-):
-    """批量生产多部漫剧"""
-    for i, topic in enumerate(topics):
-        print(f"\n{'='*50}")
-        print(f"🎬 正在制作第 {i+1}/{len(topics)} 部: {topic}")
-        print(f"{'='*50}")
+用 AI 一次性生成 3-5 个故事的大纲：
 
-        episode_dir = f"{output_dir}/episode_{i+1:02d}_{topic[:10]}"
-        os.makedirs(episode_dir, exist_ok=True)
-
-        # 复用角色（如果已存在）
-        chars_dir = f"{episode_dir}/characters"
-        if not os.path.exists(chars_dir):
-            # 首次生产需要生成角色
-            pass
-
-        # 复用分镜解析和画面生成逻辑
-        # ...（调用现有脚本）
-
-        print(f"✅ 第 {i+1} 部完成!")
-
-
-if __name__ == "__main__":
-    topics = [
-        "程序员发现代码中的秘密",
-        "外卖员送错地址",
-        "电梯里的陌生人",
-        "凌晨便利店的奇遇",
-        "遗忘的日记本",
-    ]
-    asyncio.run(batch_produce(topics))
 ```
+请帮我生成 5 个悬疑短剧的故事大纲，
+每个 60 秒左右，主角都是程序员陈默，
+但每次遇到的异常事件不同。
+```
+
+然后逐一展开成详细剧本。
+
+### Step 2：批量生成角色图
+
+如果新剧有新角色，一次性生成所有新角色的参考图：
+
+```
+请帮我生成以下角色的参考图：
+1. 林夏 - 22岁女性，棕色卷发，圆脸，白色T恤
+2. 王警官 - 45岁男性，短发，严肃表情，警服
+```
+
+### Step 3：批量生成画面
+
+按剧集顺序逐集生成。每集的固定角色不需要重新生成参考图，直接使用之前保存的。
+
+**效率技巧**：
+- 同一角色的画面，保持相同的描述关键词
+- 不同剧集之间，只改场景和动作描述
+- 使用即梦/可灵的"多图生成"功能一次出 4 张选最好的
+
+### Step 4：批量配音
+
+所有剧本准备好后，统一用剪映批量生成配音：
+1. 把所有台词整理成一个文本文件
+2. 按角色分组，统一选择音色
+3. 批量生成后按顺序命名导出
+
+### Step 5：批量合成
+
+每集单独合成，但可以使用剪映的"模板"功能：
+1. 做好一集的完整时间线
+2. 复制时间线模板
+3. 替换图片和音频即可
 
 ---
 
 ## 四、效率优化技巧
 
-### 4.1 并行生成
+### 技巧 1：固定制作顺序
 
-```python
-import asyncio
+建立固定的制作 SOP，每次按相同顺序操作：
 
-async def generate_parallel(shots: list[dict], max_concurrent: int = 5):
-    """并发生成多张分镜画面"""
-    semaphore = asyncio.Semaphore(max_concurrent)
-
-    async def one_shot(shot):
-        async with semaphore:
-            return await asyncio.to_thread(generate_shot_image, shot)
-
-    results = await asyncio.gather(
-        *[generate_shot_image(shot) for shot in shots],
-        return_exceptions=True
-    )
-    return [r for r in results if not isinstance(r, Exception)]
+```
+① 写剧本 → ② 定角色 → ③ 生画面 → ④ 配声音 → ⑤ 合成
 ```
 
-### 4.2 增量生成
+形成肌肉记忆后，每一步都不需要思考"接下来该做什么"。
 
-只重新生成有变化的部分：
+### 技巧 2：并行工作
 
-```python
-def should_regenerate(shot_id: int, last_generated: dict) -> bool:
-    """检查是否需要重新生成某个分镜"""
-    if shot_id not in last_generated:
-        return True
-    # 如果分镜描述没有变化，跳过
-    return last_generated[shot_id].get("description") != current_description
+多个步骤可以并行进行：
+
+```
+写剧本的同时 → 准备角色描述
+生成画面的同时 → 写下一集的剧本
+配音的同时 → 准备合成素材
 ```
 
-### 4.3 缓存机制
+### 技巧 3：建立素材库
 
-对相同的 Prompt 结果进行缓存，避免重复生成：
+积累常用的素材：
 
-```python
-import hashlib
-
-def get_cached_image(prompt: str) -> str | None:
-    """检查是否已有缓存"""
-    hash_key = hashlib.md5(prompt.encode()).hexdigest()
-    cache_path = f"cache/{hash_key}.png"
-    if os.path.exists(cache_path):
-        return cache_path
-    return None
 ```
+assets/
+├── characters/          # 所有角色参考图（长期积累）
+├── styles/              # 已验证的 Prompt 模板
+│   ├── suspense.txt
+│   └── romance.txt
+├── bgm/                 # 常用的背景音乐
+└── sound-effects/       # 常用音效
+```
+
+每次做新剧时，直接从素材库调用，不用每次都重新生成。
 
 ---
 
-## 五、本章小结
+## 五、成本与时间估算
 
-| 策略 | 节省时间 | 实现难度 |
-|------|---------|---------|
-| 角色复用 | 50%+ | 低 |
-| 风格模板 | 30% | 低 |
-| 剧本模板 | 40% | 中 |
-| 并行生成 | 60% | 中 |
-| 缓存机制 | 70%+ | 中 |
+### 单集成本（复用角色后）
+
+| 环节 | 首次成本 | 复用后成本 |
+|------|---------|----------|
+| 角色参考图 | ¥5-10 | ¥0（复用） |
+| 分镜画面（20张） | ¥50-80 | ¥40-60（新场景） |
+| 配音 | ¥3-5 | ¥3-5 |
+| BGM | ¥0（免费库） | ¥0 |
+| **单集合计** | **¥58-95** | **¥43-65** |
+
+### 时间节省
+
+| 阶段 | 首次 | 批量第2集 | 批量第3集 |
+|------|------|----------|----------|
+| 剧本 | 15min | 10min | 8min |
+| 角色图 | 15min | 5min | 0min |
+| 画面生成 | 20min | 15min | 12min |
+| 配音 | 15min | 10min | 8min |
+| 合成 | 15min | 12min | 10min |
+| **合计** | **80min** | **52min** | **38min** |
+
+---
+
+## 六、本章小结
+
+| 策略 | 节省时间 | 难度 |
+|------|---------|------|
+| 角色复用 | 20-30% | 低 |
+| 风格模板 | 15-20% | 低 |
+| 剧本模板 | 25-35% | 中 |
+| 并行工作 | 30-40% | 中 |
+| 素材库 | 40%+ | 中 |
+
+**核心原则**：做的越多，越快。第一批漫剧耗时最长，但随着素材库和经验的积累，后期会越来越快。
 
 ---
 

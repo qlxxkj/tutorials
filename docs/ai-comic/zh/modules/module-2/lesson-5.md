@@ -1,187 +1,195 @@
-# 第 5 课：API 配置与认证
+# 第 5 课：用 AI 辅助写剧本
 
-> 📌 **学习目标**：配置 OpenAI API Key，理解认证机制，掌握多平台兼容方案
-> ⏱️ **预计时长**：15 分钟
-> 🎯 **本节节奏**：获取 Key → 配置环境变量 → 测试连通
-
----
-
-## 一、你需要什么 API Key？
-
-AI 漫剧的核心 API 需求：
-
-| 功能 | 所需 API | 推荐服务 | 预估费用/集 |
-|------|---------|---------|------------|
-| 剧本生成 | LLM Chat | OpenAI GPT-4o | ¥0.5 |
-| 图像生成 | Image Generation | OpenAI GPT-Image-1 | ¥6～8 |
-| 语音合成 | TTS | OpenAI TTS | ¥1～2 |
-
-**只需要一个 OpenAI API Key 即可覆盖所有功能。**
+> 📌 **学习目标**：学会用 AI 工具生成和优化剧本，掌握高效的 Prompt 技巧
+> ⏱️ **预计时长**：20 分钟
+> 🎯 **本节节奏**：AI 写剧本的方法 → Prompt 技巧 → 人工精修
 
 ---
 
-## 二、获取 API Key
+## 一、为什么要用 AI 辅助写剧本？
 
-### 方式 A：OpenAI 官方
+人工写剧本的问题是：
+- 不知道格式怎么写
+- 容易写到一半跑偏
+- 镜头感不强，写出来的东西不好"画"
+- 反复修改耗时耗力
 
-1. 注册账号：[platform.openai.com](https://platform.openai.com)
-2. 充值（最低 $5 起）
-3. 进入 [API Keys 页面](https://platform.openai.com/api-keys)
-4. 点击 "Create secret key"
-5. **立即复制保存**（Key 只显示一次）
-
-### 方式 B：Agnes AI（国内访问）
-
-1. 访问 [agnes-ai.com](https://agnes-ai.com) 注册
-2. 充值后在控制台创建 API Key
-3. 获取 Base URL（如 `https://api.agnes-ai.com/v1`）
-
-### 方式 C：One API / New-API（自建代理）
-
-如果你已部署了 One API（`E:/claude/new-api/`），可以直接使用：
-
-1. 登录 One API 管理面板
-2. 创建用户并分配配额
-3. 生成 API Key
-4. Base URL 填 `http://localhost:3000/v1`（或你的部署地址）
+用 AI 辅助的好处：
+- **秒出初稿**：告诉 AI 你想讲什么，1 分钟生成完整剧本
+- **格式规范**：AI 自动按标准格式输出
+- **灵感补充**：AI 能给出你没想到的剧情转折
+- **快速迭代**：不满意随时改，几分钟一版
 
 ---
 
-## 三、配置环境变量
+## 二、用 AI 写剧本的正确姿势
 
-在项目根目录创建 `.env` 文件：
+### 方法 1：直接告诉 AI 你的故事想法
 
-```bash
-# 复制模板
-cp .env.example .env
-
-# 编辑 .env，填入你的 Key
-```
-
-`.env` 文件内容：
-
-```bash
-# OpenAI API 配置
-OPENAI_API_KEY=sk-your-key-here
-OPENAI_BASE_URL=https://api.openai.com/v1
-
-# 如果使用国内代理，改为：
-# OPENAI_BASE_URL=https://api.agnes-ai.com/v1
-
-# 如果使用本地 One API，改为：
-# OPENAI_BASE_URL=http://localhost:3000/v1
-```
-
-> ⚠️ **重要**：`.env` 文件绝对不要提交到 Git！已在 `.gitignore` 中排除。
-
----
-
-## 四、代码中读取 API Key
-
-```python
-import os
-from dotenv import load_dotenv
-from openai import OpenAI
-
-# 加载 .env 文件中的环境变量
-load_dotenv()
-
-# 初始化 OpenAI 客户端
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY"),
-    base_url=os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-)
-```
-
-这种写法的好处：**同一个代码可以在不同环境运行**——本地用本地 Key，服务器用服务器 Key，无需修改代码。
-
----
-
-## 五、测试 API 连通性
-
-创建一个测试脚本 `test_api.py`：
-
-```python
-"""API 连通性测试"""
-import os
-from dotenv import load_dotenv
-from openai import OpenAI
-
-load_dotenv()
-
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY"),
-    base_url=os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-)
-
-print("🧪 测试 LLM 连接...")
-try:
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": "说一句简短的中文：你好"}],
-        max_tokens=20
-    )
-    print(f"✅ LLM 正常: {response.choices[0].message.content}")
-except Exception as e:
-    print(f"❌ LLM 错误: {e}")
-
-print("\n🧪 测试 TTS 连接...")
-try:
-    response = client.audio.speech.create(
-        model="gpt-4o-mini-tts",
-        voice="alloy",
-        input="你好世界",
-        speed=1.0,
-    )
-    print(f"✅ TTS 正常（响应长度: {len(response.content)} bytes）")
-except Exception as e:
-    print(f"❌ TTS 错误: {e}")
-
-print("\n🧪 测试图像生成连接...")
-try:
-    response = client.images.generate(
-        model="gpt-image-1",
-        prompt="一只可爱的猫咪，动漫风格",
-        size="256x256",
-        n=1,
-    )
-    url = response.data[0].url
-    print(f"✅ 图像生成正常（URL 长度: {len(url)} 字符）")
-except Exception as e:
-    print(f"❌ 图像生成错误: {e}")
-```
-
-运行：
-
-```bash
-python test_api.py
-```
-
-期望输出：
+打开 ChatGPT / Claude / DeepSeek，直接输入：
 
 ```
-🧪 测试 LLM 连接...
-✅ LLM 正常: 你好！
+请帮我写一个 AI 漫剧剧本：
 
-🧪 测试 TTS 连接...
-✅ TTS 正常（响应长度: XXXXX bytes）
+主题：程序员深夜加班发现代码中出现不属于他的文字
+风格：悬疑
+集数：1 集（约 60 秒，15-20 个镜头）
 
-🧪 测试图像生成连接...
-✅ 图像生成正常（URL 长度: XXX 字符）
+要求：
+1. 每个镜头包含：场景、镜头角度、画面描述、角色、情绪、对话/旁白
+2. 开场要有钩子，结尾要有悬念
+3. 对话简短，每句不超过 20 字
+4. 画面描述要具体，方便AI绘图
+```
+
+### 方法 2：分步对话（效果最好）⭐推荐
+
+**第一步：先出大纲**
+
+```
+我想讲一个外卖员暴雨夜送错地址的故事，悬疑风格。
+请先帮我生成 3 集的故事大纲，每集的核心冲突和悬念是什么？
+```
+
+确认大纲满意后，再展开：
+
+**第二步：展开详细剧本**
+
+```
+第二集的大纲不错，请把它展开成详细的分镜剧本，
+严格按照下面的格式输出：
+
+【场景 N - 地点·时间·光线】
+镜头角度：[特写/近景/中景/全景]
+画面描述：[具体视觉描述]
+角色：[角色名]
+情绪：[情绪词]
+对话/旁白："[内容]"
+```
+
+**第三步：针对性修改**
+
+```
+第 3 个镜头的情绪太平了，改成"震惊"，
+画面描述加一点紧张感。
+第 7 个场景的对话太直白，改成更隐晦的表达。
 ```
 
 ---
 
-## 六、常见错误排查
+## 三、写好剧本的 Prompt 技巧
 
-| 错误信息 | 原因 | 解决方案 |
-|---------|------|---------|
-| `InvalidAuthentication` | Key 错误或过期 | 重新生成 Key |
-| `InsufficientQuota` | 账户余额不足 | 充值 |
-| `RateLimitExceeded` | 请求太快 | 添加延迟或升级套餐 |
-| `Model not found` | 模型名写错 | 检查 API 文档中的可用模型 |
-| `ConnectionError` | 网络问题 | 检查代理/VPN 设置 |
+### 技巧 1：给它一个格式范例
+
+告诉 AI 你要的格式，比让它自由发挥效果好 10 倍：
+
+```
+请严格按照以下格式输出剧本：
+
+【场景 N - 地点·时间·光线】
+镜头角度：[特写/近景/中景/全景]
+画面描述：[具体的视觉描述]
+角色：[角色名]
+情绪：[情绪词]
+对话/旁白："[内容]"
+```
+
+### 技巧 2：负面约束很重要
+
+除了告诉 AI 要什么，还要告诉它**不要什么**：
+
+```
+注意：
+- 不要写超过 20 字的长对话
+- 不要写"画面显示""镜头切换"这种元描述
+- 不要写抽象的情绪，要写具体的动作和表情
+- 不要用"感觉""好像"这类模糊词汇
+```
+
+### 技巧 3：指定参考作品
+
+如果 AI 风格不对，给它一个参考：
+
+```
+风格参考：类似《黑镜》的科技悬疑感，但更紧凑，适合 60 秒短视频。
+```
 
 ---
 
-*下节课：[第 6 课：项目结构规划](lesson-6.md)*
+## 四、生成后的精修
+
+AI 生成的剧本通常 70 分左右，值得人工调整的地方：
+
+### 4.1 开头钩子检查
+
+看第 1-3 个镜头能否立即抓住观众：
+
+```
+❌ 平淡开头：日常场景铺垫很久
+✅ 钩子开头：直接进入异常状态
+   "陈默盯着屏幕，手在发抖——代码里出现了一行不属于他的字。"
+```
+
+### 4.2 节奏检查
+
+快速过一遍剧本，标记每个镜头的情绪能量：
+
+```
+镜头 1: 低（日常）
+镜头 2: 低（日常）
+镜头 3: ↑（发现异常）
+镜头 4: ↑↑（震惊）
+镜头 5: ↑↑↑（恐惧）
+镜头 6: ↓（短暂平静）
+镜头 7: ↑↑↑（更大的冲击）
+镜头 8: ↑↑（悬念）
+```
+
+如果能量曲线太平，说明缺少转折，需要插入新镜头。
+
+### 4.3 画面可行性检查
+
+每个镜头的画面描述，问自己：
+- 这个场景 AI 能画出来吗？
+- 有没有太抽象的描述？
+- 光影是否明确？
+
+```
+❌ "气氛很紧张" → AI 不知道怎么画
+✅ "灯光忽明忽暗，影子在墙上摇晃" → AI 知道该画什么
+```
+
+---
+
+## 五、一个完整的工作流
+
+```
+1. 一句话想法  →  用 AI 生成大纲
+                    ↓
+2. 确认大纲     →  用 AI 展开详细剧本
+                    ↓
+3. 检查格式     →  确保每个镜头字段完整
+                    ↓
+4. 精修开头     →  优化钩子，确保吸引力
+                    ↓
+5. 检查节奏     →  标记情绪曲线，调整不足
+                    ↓
+6. 检查画面可行性  →  把抽象描述改为具体视觉
+                    ↓
+7. 最终确认     →  导出剧本，进入下一环节
+```
+
+---
+
+## 六、本章小结
+
+| 要点 | 说明 |
+|------|------|
+| 不要从头手写 | 先让 AI 生成初稿，再精修 |
+| 格式越具体越好 | 给 AI 明确的格式范例 |
+| 负面约束不可少 | 告诉 AI 不要做什么同样重要 |
+| AI 是助手，你是导演 | 最终决策权在你手里 |
+
+---
+
+*下节课：[第 6 课：角色设定与参考图](../module-3/lesson-6.md)*

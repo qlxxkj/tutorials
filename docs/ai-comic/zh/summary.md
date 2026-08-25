@@ -40,7 +40,6 @@
 
 ## 推荐学习资源
 
-- **OpenAI API 文档**: https://platform.openai.com/docs
 - **FFmpeg 文档**: https://ffmpeg.org/documentation.html
 - **SadTalker**: https://github.com/OpenTalker/SadTalker
 - **ComfyUI**: https://github.com/comfyanonymous/ComfyUI

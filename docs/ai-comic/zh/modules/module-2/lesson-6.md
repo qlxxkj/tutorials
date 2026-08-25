@@ -1,222 +1,115 @@
 # 第 6 课：项目结构规划
 
-> 📌 **学习目标**：建立清晰的项目目录结构，理解各模块职责
-> ⏱️ **预计时长**：15 分钟
-> 🎯 **本节节奏**：结构设计 → 模块划分 → 数据流梳理
+> 📌 **学习目标**：了解一个规范的项目文件结构，为后续制作做准备
+> ⏱️ **预计时长**：10 分钟
+> 🎯 **本节节奏**：目录结构 → 各文件夹用途 → 文件命名规范
 
 ---
 
-## 一、推荐项目结构
+## 一、推荐的项目结构
+
+一个规范的 AI 漫剧项目，文件应该这样组织：
 
 ```
-ai-comic-maker/
+我的漫剧项目/
 │
-├── .env                      # API Key（不提交 Git）
-├── .gitignore                # 排除敏感文件
-├── requirements.txt          # Python 依赖
-├── README.md                 # 项目说明
+├── script.md              # 最终剧本（Markdown 格式）
+├── characters.md          # 角色档案（可选，记录每个角色的设定）
 │
-├── scripts/                  # 核心脚本
-│   ├── __init__.py
-│   ├── main.py               # 主入口（一键生成）
-│   ├── write_script.py       # 剧本生成
-│   ├── create_characters.py  # 角色设定
-│   ├── extract_shots.py      # 分镜解析
-│   ├── generate_shots.py     # 画面生成
-│   ├── generate_voice.py     # 配音生成
-│   ├── lip_sync.py           # 口型同步
-│   └── compose_video.py      # 视频合成
-│
-├── assets/                   # 中间产物（可提交 Git）
-│   ├── characters/           # 角色参考图
-│   │   └── hero.png
-│   ├── shots/                # 分镜画面
+├── assets/                # 所有素材文件
+│   ├── characters/        # 角色参考图
+│   │   ├── 陈默.png
+│   │   └── 神秘人.png
+│   ├── shots/             # 分镜画面
 │   │   ├── shot_001.png
 │   │   ├── shot_002.png
 │   │   └── ...
-│   └── audio/                # 音频文件
-│       ├── 01_hero.mp3
-│       ├── 02_narrator.mp3
+│   ├── audio/             # 音频文件
+│   │   ├── 01_陈默.mp3
+│   │   ├── 02_旁白.mp3
+│   │   └── ...
+│   └── video/             # 视频片段（如有）
+│       ├── clip_01.mp4
 │       └── ...
 │
-├── output/                   # 最终产物
-│   ├── script.md             # 生成的剧本
-│   └── final.mp4             # 最终视频
-│
-└── tests/                    # 测试文件
-    └── test_api.py
+└── output/                # 最终输出
+    ├── script_final.md    # 定稿剧本
+    ├── subtitles.srt      # 字幕文件
+    └── final.mp4          # 最终视频
 ```
 
 ---
 
-## 二、各模块职责说明
+## 二、各文件夹用途
 
-### scripts/write_script.py
-**职责**：接收故事主题，输出 Markdown 格式的分镜剧本
+### `assets/characters/` — 角色参考图
 
-**输入**：
-- `topic: str` — 故事主题
-- `episodes: int` — 集数
-- `style: str` — 风格（悬疑/爱情/喜剧等）
+存放每个主要角色的参考图。这些图会在后续生成分镜画面时被复用，保证角色形象一致。
 
-**输出**：
-- 返回字符串：Markdown 格式的剧本
+```
+规则：
+- 文件名用角色名命名，如 陈默.png
+- 每个角色一张即可（正面全身照）
+- 分辨率建议 1024x1024 以上
+```
 
-**核心逻辑**：
-```python
-def write_script(topic: str, episodes: int = 1, style: str = "悬疑") -> str:
-    # 构造 Prompt → 调用 GPT-4o → 返回剧本文本
-    ...
+### `assets/shots/` — 分镜画面
+
+按顺序存放所有分镜图片。
+
+```
+规则：
+- 文件名用数字编号，如 shot_001.png, shot_002.png
+- 编号对应剧本中的镜头顺序
+- 保留原图，不要覆盖
+```
+
+### `assets/audio/` — 音频文件
+
+按顺序存放每段配音。
+
+```
+规则：
+- 文件名格式：序号_角色.mp3
+- 如：01_陈默.mp3, 02_旁白.mp3
+- 无声效的镜头也可以放一个空文件占位，方便对齐
+```
+
+### `output/` — 最终输出
+
+只放成品文件，保持干净。
+
+```
+- script_final.md：定稿剧本
+- subtitles.srt：字幕文件
+- final.mp4：最终视频
 ```
 
 ---
 
-### scripts/create_characters.py
-**职责**：为剧本中的角色生成参考图
+## 三、文件命名规范
 
-**输入**：
-- `name: str` — 角色名
-- `description: str` — 外貌描述
-- `style: str` — 画风
+好的命名习惯能让后续操作效率翻倍：
 
-**输出**：
-- 返回字典：`{"image_url": "...", "path": "assets/characters/hero.png"}`
-
-**核心逻辑**：
-```python
-def generate_character_art(name, description, style) -> dict:
-    # 构建 Prompt → 调用 GPT-Image-1 → 下载保存图片
-    ...
-```
-
----
-
-### scripts/extract_shots.py
-**职责**：将剧本文本解析为结构化分镜列表
-
-**输入**：
-- `script_text: str` — Markdown 剧本
-
-**输出**：
-- 返回列表：每个元素是一个分镜字典
-
-**核心逻辑**：
-```python
-def parse_script_to_shots(script_text: str) -> list[dict]:
-    # 正则解析 → 提取场景/镜头/角色/对话/情绪
-    ...
-```
-
----
-
-### scripts/generate_shots.py
-**职责**：为每个分镜生成画面图片
-
-**输入**：
-- `shots: list[dict]` — 分镜列表
-- `character_ref: str` — 角色参考图路径
-
-**输出**：
-- 返回列表：图片文件路径
-
-**核心逻辑**：
-```python
-def batch_generate_shots(shots, character_ref) -> list[str]:
-    # 循环每个分镜 → 构建 Prompt → 调用 API → 保存图片
-    ...
-```
-
----
-
-### scripts/generate_voice.py
-**职责**：为每段对话生成 TTS 音频
-
-**输入**：
-- `shots: list[dict]` — 分镜列表
-
-**输出**：
-- 返回列表：音频文件路径
-
-**核心逻辑**：
-```python
-def generate_full_audio_shots(shots) -> list[str]:
-    # 提取对话 → 按角色选择音色 → 调用 TTS API → 保存音频
-    ...
-```
-
----
-
-### scripts/compose_video.py
-**职责**：将所有素材合成为最终视频
-
-**输入**：
-- `image_paths: list[str]` — 图片路径列表
-- `audio_files: list[str]` — 音频路径列表
-- `output_path: str` — 输出视频路径
-
-**输出**：
-- 生成的视频文件路径
-
-**核心逻辑**：
-```python
-def compose_final_video(images, audios, output_path):
-    # 图片序列 → 拼接 → 叠加音频 → 添加字幕 → 输出 MP4
-    ...
-```
-
----
-
-## 三、数据流总图
-
-```
-                    ┌──────────────────┐
-                    │  topic: str      │
-                    └────────┬─────────┘
-                             │
-              ┌──────────────▼──────────────┐
-              │      write_script.py        │
-              │   (GPT-4o → Markdown)       │
-              └──────────────┬──────────────┘
-                             │ script.md
-              ┌──────────────▼──────────────┐
-              │     extract_shots.py        │
-              │   (正则解析 → list[dict])    │
-              └──────────────┬──────────────┘
-                    ┌────────┴────────┐
-                    │                 │
-        ┌───────────▼───┐    ┌────────▼──────────┐
-        │create_chars.py│    │generate_voice.py  │
-        │(GPT-Image-1)  │    │(OpenAI TTS)       │
-        └───────┬───────┘    └────────┬──────────┘
-                │                     │
-        ┌───────▼─────────────────────▼───────┐
-        │       generate_shots.py              │
-        │   (GPT-Image-1 × N shots)            │
-        └───────────────┬─────────────────────┘
-                        │
-              ┌─────────▼─────────┐
-              │   compose_video.py │
-              │  (FFmpeg 合成)      │
-              └─────────┬─────────┘
-                        │
-                 ┌──────▼──────┐
-                 │  final.mp4  │
-                 └─────────────┘
-```
+| 类型 | 命名格式 | 示例 |
+|------|---------|------|
+| 分镜图 | `shot_NNN.png` | `shot_001.png`, `shot_020.png` |
+| 音频 | `NNN_角色名.mp3` | `01_陈默.mp3`, `02_旁白.mp3` |
+| 视频片段 | `clip_NNN.mp4` | `clip_01.mp4` |
+| 角色参考图 | `角色名.png` | `陈默.png` |
+| 剧本 | `script.md` | 始终用这个名字 |
 
 ---
 
 ## 四、本章小结
 
-| 模块 | 输入 | 输出 | 核心 API |
-|------|------|------|---------|
-| write_script | 主题 | 剧本文本 | GPT-4o Chat |
-| create_characters | 角色描述 | 参考图 | GPT-Image-1 |
-| extract_shots | 剧本 | 分镜列表 | 正则解析 |
-| generate_shots | 分镜 + 角色图 | 分镜图 | GPT-Image-1 |
-| generate_voice | 分镜 | 音频 | OpenAI TTS |
-| compose_video | 图片 + 音频 | MP4 | FFmpeg |
+| 要点 | 说明 |
+|------|------|
+| 先建好目录结构 | 开始制作前就创建好各文件夹 |
+| 命名要规范 | 用数字编号，方便排序和对齐 |
+| 素材和成品分开 | `assets/` 放过程文件，`output/` 放最终产物 |
+| 定期备份 | 重要的参考图和剧本要保存好 |
 
 ---
 
-*下节课进入[模块三：剧本创作](../module-3/lesson-7.md)*
+*下节课进入[模块三：角色与画面](../module-3/lesson-6.md)*
