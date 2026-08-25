@@ -31,6 +31,7 @@ export default defineConfig({
           { text: '亚马逊运营 SOP', link: '/amazon/' },
           { text: 'AI超级个体', link: '/super-opc/' },
           { text: 'AI漫剧制作', link: '/ai-comic/' },
+          { text: 'ComfyUI教程', link: '/comfyui/' },
         ],
       },
     ],
