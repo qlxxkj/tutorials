@@ -21,6 +21,9 @@ hero:
     - theme: alt
       text: AI 漫剧制作
       link: /ai-comic/
+    - theme: alt
+      text: ComfyUI 完全指南
+      link: /comfyui/
   image:
     src: /logo.svg
     alt: qlxxkj Tutorials
