@@ -135,7 +135,7 @@ comfyui:
 | 模型名 | 风格 | 适合用途 |
 |--------|------|---------|
 | **Realistic Vision** | 写实人像 | 真实感强的画面 |
-| **Rev Animated** | 动漫风格 | AI 漫剧首选 |
+| **Rev Animated** | 动漫风格 | AI 图像作品首选 |
 | **Absolute Reality** | 超写实 | 高质量照片级 |
 | **DreamShaper** | 通用均衡 | 新手友好 |
 
