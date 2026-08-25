@@ -30,6 +30,7 @@ export default defineConfig({
           { text: 'Codex 从零到一', link: '/codex/' },
           { text: '亚马逊运营 SOP', link: '/amazon/' },
           { text: 'AI超级个体', link: '/super-opc/' },
+          { text: 'AI漫剧制作', link: '/ai-comic/' },
         ],
       },
     ],
@@ -172,6 +173,47 @@ export default defineConfig({
             { text: '第 8 章 Skill 体系与规范', link: '/super-opc/chapters/08-ai-engineering-skills' },
             { text: '第 9 章 小程序闪电战', link: '/super-opc/chapters/09-miniprogram-flash-war' },
             { text: '第 10 章 商业化与增长', link: '/super-opc/chapters/10-monetization-and-growth' },
+          ],
+        },
+      ],
+      '/ai-comic/': [
+        {
+          text: 'AI 漫剧制作指南',
+          items: [
+            { text: '入门指南', link: '/ai-comic/zh/' },
+            { text: '工具与资源', link: '/ai-comic/zh/appendix/tools' },
+            { text: '常见问题', link: '/ai-comic/zh/appendix/faq' },
+            { text: '课程总览', link: '/ai-comic/zh/summary' },
+            { text: '模块一：认识 AI 漫剧', collapsed: true, items: [
+              { text: '第 1 课：什么是 AI 漫剧', link: '/ai-comic/zh/modules/module-1/lesson-1' },
+              { text: '第 2 课：核心工作流程', link: '/ai-comic/zh/modules/module-1/lesson-2' },
+              { text: '第 3 课：技术选型与工具链', link: '/ai-comic/zh/modules/module-1/lesson-3' },
+            ]},
+            { text: '模块二：环境搭建', collapsed: true, items: [
+              { text: '第 4 课：开发环境准备', link: '/ai-comic/zh/modules/module-2/lesson-4' },
+              { text: '第 5 课：API 配置与认证', link: '/ai-comic/zh/modules/module-2/lesson-5' },
+              { text: '第 6 课：项目结构规划', link: '/ai-comic/zh/modules/module-2/lesson-6' },
+            ]},
+            { text: '模块三：剧本创作', collapsed: true, items: [
+              { text: '第 7 课：漫剧剧本格式', link: '/ai-comic/zh/modules/module-3/lesson-7' },
+              { text: '第 8 课：用 AI 辅助写剧本', link: '/ai-comic/zh/modules/module-3/lesson-8' },
+              { text: '第 9 课：分镜脚本解析', link: '/ai-comic/zh/modules/module-3/lesson-9' },
+            ]},
+            { text: '模块四：画面生成', collapsed: true, items: [
+              { text: '第 10 课：角色设定与参考图', link: '/ai-comic/zh/modules/module-4/lesson-10' },
+              { text: '第 11 课：Prompt 工程技巧', link: '/ai-comic/zh/modules/module-4/lesson-11' },
+              { text: '第 12 课：批量生成分镜画面', link: '/ai-comic/zh/modules/module-4/lesson-12' },
+            ]},
+            { text: '模块五：音频与合成', collapsed: true, items: [
+              { text: '第 13 课：TTS 配音生成', link: '/ai-comic/zh/modules/module-5/lesson-13' },
+              { text: '第 14 课：口型同步（Lip Sync）', link: '/ai-comic/zh/modules/module-5/lesson-14' },
+              { text: '第 15 课：视频合成与后期', link: '/ai-comic/zh/modules/module-5/lesson-15' },
+            ]},
+            { text: '模块六：实战项目', collapsed: true, items: [
+              { text: '项目一：制作第一部 AI 漫剧', link: '/ai-comic/zh/modules/module-6/project-1' },
+              { text: '项目二：批量生产系列短剧', link: '/ai-comic/zh/modules/module-6/project-2' },
+              { text: '项目三：部署自动化流水线', link: '/ai-comic/zh/modules/module-6/project-3' },
+            ]},
           ],
         },
       ],

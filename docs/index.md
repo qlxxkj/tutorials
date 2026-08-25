@@ -18,6 +18,9 @@ hero:
     - theme: alt
       text: 打造 AI 超级个体
       link: /super-opc/
+    - theme: alt
+      text: AI 漫剧制作
+      link: /ai-comic/
   image:
     src: /logo.svg
     alt: qlxxkj Tutorials
@@ -41,6 +44,11 @@ features:
     title: 打造 AI 超级个体
     details: Vibe Coding 实战教程。零基础从想法到上线，四大 AI 工具全掌握，一人成军。
     link: /super-opc/
+    linkText: 开始学习
+  - icon: 🎬
+    title: AI 漫剧制作指南
+    details: 从零开始，用 AI 全流程制作漫画剧集。剧本→角色→画面→配音→合成，6 模块 16 课 + 3 个实战项目。
+    link: /ai-comic/
     linkText: 开始学习
 ---
 
