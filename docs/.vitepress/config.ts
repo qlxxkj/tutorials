@@ -207,7 +207,8 @@ export default defineConfig({
             { text: '模块六：实战项目', collapsed: true, items: [
               { text: '项目一：制作第一部 AI 漫剧', link: '/ai-comic/zh/modules/module-6/project-1' },
               { text: '项目二：批量生产系列短剧', link: '/ai-comic/zh/modules/module-6/project-2' },
-              { text: '项目三：部署自动化流水线', link: '/ai-comic/zh/modules/module-6/project-3' },
+              { text: '项目三：批量发布与长期运营', link: '/ai-comic/zh/modules/module-6/project-3' },
+              { text: '项目四：制作产品广告视频', link: '/ai-comic/zh/modules/module-6/project-4' },
             ]},
           ],
         },
