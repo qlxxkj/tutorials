@@ -24,6 +24,9 @@ hero:
     - theme: alt
       text: ComfyUI 完全指南
       link: /comfyui/
+    - theme: alt
+      text: Palantir FDE
+      link: /palantir-fde/
   image:
     src: /logo.svg
     alt: qlxxkj Tutorials
@@ -52,6 +55,11 @@ features:
     title: ComfyUI 完全指南
     details: 本地运行 Stable Diffusion，角色一致性最强。节点式工作流、IP-Adapter、ControlNet，从零掌握专业级 AI 图像生成。
     link: /comfyui/
+    linkText: 开始学习
+  - icon: 🏢
+    title: Palantir FDE 工程师培训
+    details: Frontend Development Engineer 入门指南。TypeScript、React、Foundry 平台、Ontology 建模、AIP Agent，掌握企业级数据应用开发。
+    link: /palantir-fde/
     linkText: 开始学习
   - icon: 🎬
     title: AI 漫剧制作指南

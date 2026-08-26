@@ -32,6 +32,7 @@ export default defineConfig({
           { text: 'AI超级个体', link: '/super-opc/' },
           { text: 'AI漫剧制作', link: '/ai-comic/' },
           { text: 'ComfyUI教程', link: '/comfyui/' },
+          { text: 'Palantir FDE', link: '/palantir-fde/' },
         ],
       },
     ],
