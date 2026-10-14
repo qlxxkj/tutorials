@@ -1,0 +1,24 @@
+mixed-port: 7890
+allow-lan: false
+mode: global
+log-level: info
+proxies:
+  - name: "hk-vmess-8443"
+    type: vmess
+    server: 207.211.161.100
+    port: 8443
+    uuid: 26c188dc-be29-4b0a-b26a-24a3df3b5c47
+    alterId: 0
+    cipher: auto
+    tls: false
+    skip-cert-verify: true
+    udp: true
+proxy-groups:
+  - name: "PROXY"
+    type: url-test
+    proxies:
+      - hk-vmess-8443
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+rules:
+  - MATCH,PROXY
