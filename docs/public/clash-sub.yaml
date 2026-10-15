@@ -13,11 +13,22 @@ proxies:
     tls: false
     skip-cert-verify: true
     udp: true
+  - name: "hk2-vmess-8443"
+    type: vmess
+    server: 147.224.138.181
+    port: 8443
+    uuid: fc512940-c1d6-4b8d-a929-ded36bbd7cc0
+    alterId: 0
+    cipher: auto
+    tls: false
+    skip-cert-verify: true
+    udp: true
 proxy-groups:
   - name: "PROXY"
     type: url-test
     proxies:
       - hk-vmess-8443
+      - hk2-vmess-8443
     url: http://www.gstatic.com/generate_204
     interval: 300
 rules:
