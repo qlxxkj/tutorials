@@ -32,6 +32,8 @@ jobs:
         run: npm ci
       - name: Build VitePress
         run: npm run build
+      - name: Copy CNAME into dist
+        run: cp CNAME docs/.vitepress/dist/CNAME
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
