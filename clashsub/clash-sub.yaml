@@ -1,24 +1,29 @@
 mixed-port: 7890
 allow-lan: false
 mode: global
-log-level: info
+log:
+  level: info
+
 proxies:
-  - name: "hk-vmess-8443"
+  - name: "hk2-vmess-8443"
     type: vmess
-    server: 207.211.161.100
+    server: 147.224.138.181
     port: 8443
-    uuid: 26c188dc-be29-4b0a-b26a-24a3df3b5c47
+    uuid: fc512940-c1d6-4b8d-a929-ded36bbd7cc0
     alterId: 0
     cipher: auto
-    tls: false
+    tls: true
     skip-cert-verify: true
+    server-name: www.microsoft.com
     udp: true
+
 proxy-groups:
   - name: "PROXY"
     type: url-test
     proxies:
-      - hk-vmess-8443
+      - hk2-vmess-8443
     url: http://www.gstatic.com/generate_204
     interval: 300
+
 rules:
   - MATCH,PROXY
