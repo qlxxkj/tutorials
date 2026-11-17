@@ -27,6 +27,9 @@ hero:
     - theme: alt
       text: Palantir FDE
       link: /palantir-fde/
+    - theme: alt
+      text: 微信小程序实战
+      link: /miniprogram/
   image:
     src: /logo.svg
     alt: qlxxkj Tutorials
@@ -65,6 +68,11 @@ features:
     title: AI 漫剧制作指南
     details: 从零开始，用 AI 全流程制作漫画剧集。剧本→角色→画面→配音→合成，6 模块 16 课 + 3 个实战项目。
     link: /ai-comic/
+    linkText: 开始学习
+  - icon: 📱
+    title: 微信小程序实战
+    details: 原生开发 + 云开发全流程。16 课 + 3 个可上线项目：天气查询、家谱管理、预约咨询，零门槛从想法到发布。
+    link: /miniprogram/
     linkText: 开始学习
 ---
 

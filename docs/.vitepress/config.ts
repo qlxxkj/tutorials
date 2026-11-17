@@ -42,6 +42,7 @@ export default defineConfig({
           { text: 'AI漫剧制作', link: '/ai-comic/' },
           { text: 'ComfyUI教程', link: '/comfyui/' },
           { text: 'Palantir FDE', link: '/palantir-fde/' },
+          { text: '微信小程序实战', link: '/miniprogram/' },
         ],
       },
     ],
@@ -184,6 +185,51 @@ export default defineConfig({
             { text: '第 8 章 Skill 体系与规范', link: '/super-opc/chapters/08-ai-engineering-skills' },
             { text: '第 9 章 小程序闪电战', link: '/super-opc/chapters/09-miniprogram-flash-war' },
             { text: '第 10 章 商业化与增长', link: '/super-opc/chapters/10-monetization-and-growth' },
+          ],
+        },
+      ],
+      '/miniprogram/': [
+        {
+          text: '微信小程序实战',
+          items: [
+            { text: '课程简介', link: '/miniprogram/zh/' },
+            { text: '课程总览', link: '/miniprogram/zh/summary' },
+            { text: '模块一：认识微信小程序', collapsed: true, items: [
+              { text: '第 1 课：小程序市场与独立开发者优势', link: '/miniprogram/zh/modules/module-1/lesson-1' },
+              { text: '第 2 课：技术架构与目录结构', link: '/miniprogram/zh/modules/module-1/lesson-2' },
+              { text: '第 3 课：注册、备案与开发工具配置', link: '/miniprogram/zh/modules/module-1/lesson-3' },
+            ]},
+            { text: '模块二：原生小程序开发', collapsed: true, items: [
+              { text: '第 4 课：第一个页面 WXML + WXSS + 数据绑定', link: '/miniprogram/zh/modules/module-2/lesson-4' },
+              { text: '第 5 课：事件处理与页面跳转', link: '/miniprogram/zh/modules/module-2/lesson-5' },
+              { text: '第 6 课：组件与页面生命周期', link: '/miniprogram/zh/modules/module-2/lesson-6' },
+              { text: '第 7 课：网络请求、本地存储与定位 API', link: '/miniprogram/zh/modules/module-2/lesson-7' },
+            ]},
+            { text: '模块三：云开发', collapsed: true, items: [
+              { text: '第 8 课：云开发架构与初始化', link: '/miniprogram/zh/modules/module-3/lesson-8' },
+              { text: '第 9 课：云数据库 CRUD 实战', link: '/miniprogram/zh/modules/module-3/lesson-9' },
+              { text: '第 10 课：云函数 — 后端逻辑 AI 实现', link: '/miniprogram/zh/modules/module-3/lesson-10' },
+              { text: '第 11 课：实时数据监听与文件存储', link: '/miniprogram/zh/modules/module-3/lesson-11' },
+            ]},
+            { text: '模块四：用户体系', collapsed: true, items: [
+              { text: '第 12 课：wx.login 与手机号授权', link: '/miniprogram/zh/modules/module-4/lesson-12' },
+              { text: '第 13 课：微信支付完整流程', link: '/miniprogram/zh/modules/module-4/lesson-13' },
+              { text: '第 14 课：openid / unionid 与会员系统', link: '/miniprogram/zh/modules/module-4/lesson-14' },
+            ]},
+            { text: '模块五：上线', collapsed: true, items: [
+              { text: '第 15 课：审核策略与常见驳回处理', link: '/miniprogram/zh/modules/module-5/lesson-15' },
+              { text: '第 16 课：版本发布与灰度策略', link: '/miniprogram/zh/modules/module-5/lesson-16' },
+            ]},
+            { text: '模块六：实战项目', collapsed: true, items: [
+              { text: '项目 1：天气查询小程序', link: '/miniprogram/zh/modules/module-6/project-1' },
+              { text: '项目 2：家谱管理小程序', link: '/miniprogram/zh/modules/module-6/project-2' },
+              { text: '项目 3：预约咨询小程序', link: '/miniprogram/zh/modules/module-6/project-3' },
+            ]},
+            { text: '附录', collapsed: true, items: [
+              { text: '常见问题 FAQ', link: '/miniprogram/zh/appendix/faq' },
+              { text: '术语表', link: '/miniprogram/zh/appendix/glossary' },
+              { text: '课前准备清单', link: '/miniprogram/zh/appendix/prep-checklist' },
+            ]},
           ],
         },
       ],
