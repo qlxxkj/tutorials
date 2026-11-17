@@ -17,7 +17,16 @@ export default defineConfig({
     ['meta', { property: 'og:locale', content: 'zh_CN' }],
     ['meta', { property: 'og:title', content: 'qlxxkj 教程中心' }],
     ['meta', { property: 'og:description', content: 'Claude Code、Codex、亚马逊运营教程合集' }],
+    ['meta', { property: 'og:url', content: 'https://qlxxkj.eu.org/' }],
   ],
+
+  // Canonical URL 注入：每页自动加 <link rel="canonical">
+  transformPageData: (pageData, { siteData, page }) => {
+    const path = siteData.base ? pageData.path.replace(siteData.base, '') : pageData.path
+    const canonical = `https://qlxxkj.eu.org/${path.endsWith('/') ? path : path + '/'}`
+    pageData.head.splice(0, 0, ['link', { rel: 'canonical', href: canonical }])
+    return pageData
+  },
 
   themeConfig: {
     logo: '/logo.svg',

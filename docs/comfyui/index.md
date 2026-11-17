@@ -1,14 +1,10 @@
 ---
-title: 重定向中...
+layout: page
+title: ComfyUI 完全指南
+description: ComfyUI 节点图 AI 绘图工作流完整教程，从基础节点到生产级 ComfyUI 工作流
 ---
 
-<script setup>
-import { onMounted } from 'vue'
-onMounted(() => {
-  window.location.replace('/comfyui/zh/')
-})
-</script>
-
-<div style="text-align:center;margin-top:40px;">
-  <p>正在跳转到 <a href="/comfyui/zh/">/comfyui/zh/</a>...</p>
+<div style="text-align:center;padding:40px;">
+  <meta http-equiv="refresh" content="0;url=/comfyui/zh/" />
+  <p>正在跳转到 <a href="/comfyui/zh/">ComfyUI 完全指南</a>...</p>
 </div>

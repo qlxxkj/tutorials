@@ -1,3 +1,7 @@
+---
+title: Claude Code 入门教程
+description: 面向零基础的 AI 编程助手 Claude Code 完整教程：从安装到自动化工作流，共 16 课
+---
 
 # Claude Code 入门教程
 

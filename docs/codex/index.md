@@ -1,3 +1,7 @@
+---
+title: Codex 从零到一
+description: OpenAI Codex AI 编程助手完整教程：安装、界面、自然语言驱动、自动化任务共 16 课
+---
 
 # Codex 从零到一
 

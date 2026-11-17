@@ -1,14 +1,10 @@
 ---
-title: 重定向中...
+layout: page
+title: Palantir FDE 工程师培训
+description: Palantir FDE（Forward-Deployed Engineer）岗位培训指南，涵盖核心概念、工具栈与实战项目
 ---
 
-<script setup>
-import { onMounted } from 'vue'
-onMounted(() => {
-  window.location.replace('/palantir-fde/zh/')
-})
-</script>
-
-<div style="text-align:center;margin-top:40px;">
-  <p>正在跳转到 <a href="/palantir-fde/zh/">/palantir-fde/zh/</a>...</p>
+<div style="text-align:center;padding:40px;">
+  <meta http-equiv="refresh" content="0;url=/palantir-fde/zh/" />
+  <p>正在跳转到 <a href="/palantir-fde/zh/">Palantir FDE 工程师培训</a>...</p>
 </div>

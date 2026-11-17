@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://qlxxkj.eu.org/sitemap.xml

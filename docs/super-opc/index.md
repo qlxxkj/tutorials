@@ -1,3 +1,7 @@
+---
+title: 打造 AI 超级个体
+description: 零基础 AI 产品开发实战教程：从想法到上线到变现，10 章 Vibe Coding 全流程
+---
 # 打造AI超级个体
 
 > 零基础也能用 AI 做出可上线的产品 · Vibe Coding 实战教程  
