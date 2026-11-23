@@ -21,8 +21,13 @@ export default defineConfig({
   ],
 
   // Canonical URL 注入：每页自动加 <link rel="canonical">
-  transformPageData: (pageData, { siteData, page }) => {
-    const path = siteData.base ? pageData.path.replace(siteData.base, '') : pageData.path
+  transformPageData: (pageData, ctx) => {
+    // vitepress 1.x 把 context 字段从 siteData 改名为 siteConfig,兜底两者
+    const siteData = ctx.siteConfig || ctx.siteData
+    const base = siteData?.base || '/'
+    const rawPath = pageData.path || pageData.url || ''
+    const path = base !== '/' ? rawPath.replace(base, '') : rawPath
+    if (!path) return pageData // 跳页/无 path 的页不强加 canonical,避免 undefined
     const canonical = `https://qlxxkj.eu.org/${path.endsWith('/') ? path : path + '/'}`
     pageData.head.splice(0, 0, ['link', { rel: 'canonical', href: canonical }])
     return pageData
